@@ -59,6 +59,18 @@ const NavBar = () => {
     setShowSuggestions(true);
   }, [suggestions]);
 
+  // 연관검색어 리스트 ref
+  const suggRef = useRef<HTMLUListElement>(null);
+
+  // onBlur 시, 다음 포커스 대상이 리스트 내부면 닫지 않도록
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const next = e.relatedTarget as HTMLElement | null;
+    if (next && suggRef.current?.contains(next)) {
+      return;
+    }
+    setShowSuggestions(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
@@ -82,7 +94,10 @@ const NavBar = () => {
           "linear-gradient(90deg, #6A39C0 0%, #6A39C0 50%, #3C6FE5 100%)",
       }}
     >
-      <div className="flex items-center gap-[10px]">
+      <div
+        className="flex items-center gap-[10px] cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         <img src={logo} alt="logo" />
         <h1 className="text-white font-25-700">포도위키</h1>
       </div>
@@ -93,7 +108,7 @@ const NavBar = () => {
             className="w-[159px] font-15-400 focus:outline-none"
             placeholder="여기에서 검색"
             value={searchValue}
-            onBlur={() => setShowSuggestions(false)}
+            onBlur={handleInputBlur}
             onFocus={() => setShowSuggestions(true)}
             onChange={(e) => {
               const q = e.target.value;
@@ -103,6 +118,35 @@ const NavBar = () => {
               }
             }}
           ></input>
+          {showSuggestions && suggestions.length > 0 && (
+            <ul
+              className="absolute top-full left-0 mt-1 w-[217px] bg-white border border-[#ccc] rounded-[6px] shadow-lg z-10"
+              ref={suggRef}
+            >
+              {suggestions.map((title, idx) => (
+                <li
+                  key={idx}
+                  tabIndex={0}
+                  className="px-[12px] py-[8px] cursor-pointer hover:bg-gray-100"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    navigate(`/page/${encodeURI(title)}`);
+                    setSearchValue("");
+                    setSuggestions([]);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      navigate(`/page/${encodeURI(title)}`);
+                      setSearchValue("");
+                      setSuggestions([]);
+                    }
+                  }}
+                >
+                  {title}
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="flex items-center gap-[8px]">
             <button
               className="size-[15px] cursor-pointer"
@@ -117,23 +161,6 @@ const NavBar = () => {
               <img className="w-[11px] h-[10px]" src={rightArrow} alt="" />
             </button>
           </div>
-          {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 mt-1 w-[217px] bg-white border border-[#ccc] rounded-[6px] shadow-lg z-10">
-              {suggestions.map((title, idx) => (
-                <li
-                  key={idx}
-                  className="px-[12px] py-[8px] cursor-pointer hover:bg-gray-100"
-                  onClick={() => {
-                    navigate(`/page/${title}`);
-                    setSearchValue("");
-                    setSuggestions([]);
-                  }}
-                >
-                  {title}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
         {user ? (

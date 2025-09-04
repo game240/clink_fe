@@ -86,7 +86,7 @@ const RecentChange = () => {
             <div className="flex items-center gap-2">
               <span
                 className="font-15-400 break-words text-[var(--blue)] cursor-pointer hover:text-[#0263b8] hover:underline"
-                onClick={() => navigate(`/page/${item.title}`)}
+                onClick={() => navigate(`/page/${encodeURI(item.title)}`)}
               >
                 {item.title}
               </span>

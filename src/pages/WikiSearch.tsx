@@ -46,7 +46,7 @@ const WikiSearch = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams({
-          q: encodeURIComponent(query),
+          q: query,
           page: String(page),
           pageSize: String(pageSize),
         });
@@ -103,7 +103,7 @@ const WikiSearch = () => {
               </div>
               <p
                 className="font-24-700 cursor-pointer"
-                onClick={() => navigate(`/page/${item.title}`)}
+                onClick={() => navigate(`/page/${encodeURI(item.title)}`)}
               >
                 {item.title}
               </p>

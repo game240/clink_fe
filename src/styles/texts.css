@@ -38,6 +38,14 @@
   letter-spacing: -0.3px;
 }
 
+.font-15-700 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.3px;
+}
+
 .font-18-400 {
   font-size: 18px;
   font-style: normal;
@@ -60,6 +68,22 @@
   font-weight: 600;
   line-height: normal;
   letter-spacing: -0.36px;
+}
+
+.font-18-700 {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.36px;
+}
+
+.font-21-700 {
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.42px;
 }
 
 .font-24-700 {

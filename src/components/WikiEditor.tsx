@@ -21,7 +21,7 @@ import MenuBar from "./MenuBar";
 import { useEffect, useState, useMemo } from "react";
 import axiosClient from "../apis/axiosClient";
 import FootnoteEditor from "./FootnoteEditor";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { AxiosError } from "axios";
 
 interface FootnoteItem {
@@ -40,7 +40,9 @@ interface Meta {
 }
 
 export default function WikiEditor() {
-  const { title } = useParams();
+  const { pathname } = useLocation(); // e.g. "/edit/광운대학교/광운극예술연구회"
+  const raw = pathname.replace(/^\/edit\//, ""); // "광운대학교/광운극예술연구회"
+  const title = decodeURI(raw);
 
   const [initialContent, setInitialContent] = useState<JSONContent[] | null>(
     null
@@ -100,7 +102,7 @@ export default function WikiEditor() {
 
     const loadPage = async () => {
       try {
-        const encodedTitle = encodeURIComponent(title);
+        const encodedTitle = encodeURI(title);
 
         const { data } = await axiosClient.get(`/page?title=${encodedTitle}`);
         setMeta(data.meta);

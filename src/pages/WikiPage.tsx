@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AxiosError } from "axios";
 import WikiViewer from "../components/WikiViewer";
 import type { JSONContent } from "@tiptap/react";
 import axiosClient from "../apis/axiosClient";
 import { parseISO, format } from "date-fns";
+import ParentLink from "../components/ParentLink";
 
 interface WikiDoc {
   meta: {
@@ -28,7 +29,10 @@ interface WikiDoc {
 }
 
 const WikiPage = () => {
-  const { title } = useParams();
+  const { pathname } = useLocation(); // ex: "/page/수도권/동북권/광운대학교"
+  const raw = pathname.replace(/^\/page\//, ""); // "수도권/동북권/광운대학교"
+  const title = decodeURI(raw); // 디코딩
+
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -40,7 +44,7 @@ const WikiPage = () => {
       setLoading(true);
       try {
         // 한글·공백 안전 인코딩
-        const encoded = encodeURIComponent(title || "");
+        const encoded = encodeURI(title || "");
         const { data } = await axiosClient.get(`/page?title=${encoded}`);
         setDoc(data);
         setExists(true);
@@ -76,7 +80,7 @@ const WikiPage = () => {
           <button
             className="w-[74px] h-[36px] font-15-400 rounded-[6px] border-1 border-[#CCC] bg-white cursor-pointer"
             // 편집 버튼도 제목을 넘겨서 이동
-            onClick={() => navigate(`/edit/${encodeURIComponent(title || "")}`)}
+            onClick={() => navigate(`/edit/${encodeURI(title || "")}`)}
           >
             편집
           </button>
@@ -91,7 +95,7 @@ const WikiPage = () => {
               ? format(parseISO(doc?.meta?.updated_at), "yyyy-MM-dd HH:mm:ss")
               : "알 수 없음"}
           </p>
-          <section className="flex flex-col gap-[17px]">
+          <section className="flex flex-col gap-[17px] mb-[14.4px]">
             <div className="flex items-center pl-[8px] w-full h-[23px] rounded-[6px] border-1 border-[#CCC] font-14-400">
               분류:&nbsp;
               {doc?.meta?.categories?.map((category, i) => (
@@ -109,6 +113,8 @@ const WikiPage = () => {
             </div>
           </section>
 
+          <ParentLink />
+
           {/* 실제 내용 렌더러에 doc.content 전달 */}
           <WikiViewer initialContent={doc?.content?.content || []} />
         </>
@@ -117,7 +123,7 @@ const WikiPage = () => {
           <p>"{title}" 페이지가 존재하지 않습니다.</p>
           <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
-            onClick={() => navigate(`/edit/${encodeURIComponent(title || "")}`)}
+            onClick={() => navigate(`/edit/${encodeURI(title || "")}`)}
           >
             새 문서 생성
           </button>

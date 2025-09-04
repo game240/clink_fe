@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fontsource/pretendard/index.css";
 
 @layer base {
   h1,
@@ -18,9 +19,7 @@
   textarea,
   hr {
     margin: 0;
-    font-family: "Pretendard Variable", Pretendard, -apple-system,
-      BlinkMacSystemFont, system-ui, Roboto, "Noto Sans KR", "Malgun Gothic",
-      sans-serif;
+    font-family: "pretendard", "Apple SD Gothic Neo", Sans-serif;
   }
 }
 
