@@ -15,6 +15,7 @@ interface WikiDoc {
     updated_at: string;
     author_id: string;
     current_rev: string;
+    current_rev_number: number;
     categories: [
       {
         category_id: string;
@@ -96,7 +97,7 @@ const WikiPage = () => {
     <main className="size-full">
       <div className="flex justify-between items-center">
         <h1 className="font-36-700">
-          {title} {revision_id && `(${revision_id})`}
+          {title} {doc && `(v${doc?.meta?.current_rev_number})`}
         </h1>
         {exists && (
           <button
