@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import WikiViewer from "../components/WikiViewer";
 import type { JSONContent } from "@tiptap/react";
@@ -33,20 +33,40 @@ const WikiPage = () => {
   const raw = pathname.replace(/^\/page\//, ""); // "수도권/동북권/광운대학교"
   const title = decodeURI(raw); // 디코딩
 
+  // query param: ?revision_id=[uuid]
+  const [searchParams] = useSearchParams();
+  const revision_id = searchParams.get("revision_id");
+
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [exists, setExists] = useState(true);
   const [doc, setDoc] = useState<WikiDoc | null>(null);
 
+  const fetchRecentPage = useCallback(async () => {
+    const encoded = encodeURI(title || "");
+    const { data } = await axiosClient.get(`/page?title=${encoded}`);
+    setDoc(data);
+  }, [title]);
+
+  const fetchRevision = useCallback(async () => {
+    const { data } = await axiosClient.get(`/revision/${revision_id}`, {
+      // params: { with_prev_diff: 1 }, // TOOD: 구현 후 주석 해제
+    });
+    setDoc(data);
+  }, [revision_id]);
+
   useEffect(() => {
     const loadPage = async () => {
       setLoading(true);
       try {
-        // 한글·공백 안전 인코딩
-        const encoded = encodeURI(title || "");
-        const { data } = await axiosClient.get(`/page?title=${encoded}`);
-        setDoc(data);
+        if (revision_id) {
+          // 특정 revision 조회
+          await fetchRevision();
+        } else {
+          // 최근 페이지 조회
+          await fetchRecentPage();
+        }
         setExists(true);
       } catch (error) {
         if (error instanceof AxiosError) {
@@ -66,7 +86,7 @@ const WikiPage = () => {
     };
 
     loadPage();
-  }, [title]);
+  }, [title, revision_id, fetchRecentPage, fetchRevision]);
 
   if (loading) {
     return <p>로딩 중…</p>;
@@ -75,7 +95,9 @@ const WikiPage = () => {
   return (
     <main className="size-full">
       <div className="flex justify-between items-center">
-        <h1 className="font-36-700">{title}</h1>
+        <h1 className="font-36-700">
+          {title} {revision_id && `(${revision_id})`}
+        </h1>
         {exists && (
           <button
             className="w-[74px] h-[36px] font-15-400 rounded-[6px] border-1 border-[#CCC] bg-white cursor-pointer"
