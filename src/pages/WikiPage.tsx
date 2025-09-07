@@ -97,7 +97,7 @@ const WikiPage = () => {
     <main className="size-full">
       <div className="flex justify-between items-center">
         <h1 className="font-36-700">
-          {title} {doc && `(v${doc?.meta?.current_rev_number})`}
+          {title} {revision_id && doc && `(v${doc?.meta?.current_rev_number})`}
         </h1>
         {exists && (
           <button
