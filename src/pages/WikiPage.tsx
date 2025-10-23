@@ -6,6 +6,7 @@ import type { JSONContent } from "@tiptap/react";
 import axiosClient from "../apis/axiosClient";
 import { parseISO, format } from "date-fns";
 import ParentLink from "../components/ParentLink";
+import DiffViewer from "../components/DiffViewer";
 
 interface WikiDoc {
   meta: {
@@ -43,18 +44,23 @@ const WikiPage = () => {
   const [loading, setLoading] = useState(true);
   const [exists, setExists] = useState(true);
   const [doc, setDoc] = useState<WikiDoc | null>(null);
+  const [currentDoc, setCurrentDoc] = useState<WikiDoc | null>(null);
+  const [showDiff, setShowDiff] = useState<boolean>(!!revision_id);
+  const [diffVariant, setDiffVariant] = useState<"inline" | "split">(
+    "inline"
+  );
 
   const fetchRecentPage = useCallback(async () => {
     const encoded = encodeURI(title || "");
     const { data } = await axiosClient.get(`/page?title=${encoded}`);
-    setDoc(data);
+    return data as WikiDoc;
   }, [title]);
 
   const fetchRevision = useCallback(async () => {
     const { data } = await axiosClient.get(`/revision/${revision_id}`, {
       // params: { with_prev_diff: 1 }, // TOOD: 구현 후 주석 해제
     });
-    setDoc(data);
+    return data as WikiDoc;
   }, [revision_id]);
 
   useEffect(() => {
@@ -62,11 +68,18 @@ const WikiPage = () => {
       setLoading(true);
       try {
         if (revision_id) {
-          // 특정 revision 조회
-          await fetchRevision();
+          // 특정 revision과 현재 버전 동시 조회 후 상태 저장
+          const [rev, current] = await Promise.all([
+            fetchRevision(),
+            fetchRecentPage(),
+          ]);
+          setDoc(rev);
+          setCurrentDoc(current);
         } else {
           // 최근 페이지 조회
-          await fetchRecentPage();
+          const current = await fetchRecentPage();
+          setDoc(current);
+          setCurrentDoc(current);
         }
         setExists(true);
       } catch (error) {
@@ -113,11 +126,50 @@ const WikiPage = () => {
       {exists ? (
         <>
           <p className="mt-[8px] mb-[24px] font-14-400 text-[#212529BF]">
-            최근 수정 시각:{" "}
+            최근 수정 시각: {" "}
             {doc?.meta?.updated_at
               ? format(parseISO(doc?.meta?.updated_at), "yyyy-MM-dd HH:mm:ss")
               : "알 수 없음"}
           </p>
+          {revision_id && doc && currentDoc && (
+            <section className="flex flex-col gap-2 p-[12px] mb-[16px] rounded-[6px] border-1 border-[#EEE] bg-[#FAFAFA]">
+              <div className="font-14-600">
+                비교 대상: v{doc.meta.current_rev_number} ↔ 현재
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="font-14-400">보기 방식</label>
+                <select
+                  className="px-2 py-1 border-1 border-[#CCC] rounded-[6px]"
+                  value={diffVariant}
+                  onChange={(e) =>
+                    setDiffVariant((e.target.value as "inline" | "split") || "inline")
+                  }
+                >
+                  <option value="inline">인라인</option>
+                  <option value="split">양쪽</option>
+                </select>
+                <button
+                  className="px-2 py-1 border-1 border-[#CCC] rounded-[6px] bg-white cursor-pointer"
+                  onClick={() => setShowDiff((s) => !s)}
+                >
+                  {showDiff ? "원문 보기" : "Diff 보기"}
+                </button>
+              </div>
+              {showDiff && (
+                <div className="mt-2">
+                  <DiffViewer
+                    leftTitle={`v${doc.meta.current_rev_number}`}
+                    rightTitle="현재"
+                    leftContent={(doc.content?.content as JSONContent[]) || []}
+                    rightContent={
+                      (currentDoc.content?.content as JSONContent[]) || []
+                    }
+                    variant={diffVariant}
+                  />
+                </div>
+              )}
+            </section>
+          )}
           <section className="flex flex-col gap-[17px] mb-[14.4px]">
             <div className="flex items-center pl-[8px] w-full h-[23px] rounded-[6px] border-1 border-[#CCC] font-14-400">
               분류:&nbsp;
@@ -138,8 +190,10 @@ const WikiPage = () => {
 
           <ParentLink />
 
-          {/* 실제 내용 렌더러에 doc.content 전달 */}
-          <WikiViewer initialContent={doc?.content?.content || []} />
+          {/* 실제 내용 렌더러에 doc.content 전달 (Diff 보기 중에는 원문도 함께 볼 수 있도록 유지) */}
+          {!doc ? null : (
+            <WikiViewer initialContent={doc.content?.content || []} />
+          )}
         </>
       ) : (
         <div className="mt-8">
