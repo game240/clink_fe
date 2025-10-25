@@ -35,9 +35,10 @@ const WikiPage = () => {
   const raw = pathname.replace(/^\/page\//, ""); // "수도권/동북권/광운대학교"
   const title = decodeURI(raw); // 디코딩
 
-  // query param: ?revision_id=[uuid]
+  // query param: ?revision_id=[uuid]&show_diff=true
   const [searchParams] = useSearchParams();
   const revision_id = searchParams.get("revision_id");
+  const showDiff = searchParams.get("show_diff") === "true" || false;
 
   const navigate = useNavigate();
 
@@ -45,10 +46,12 @@ const WikiPage = () => {
   const [exists, setExists] = useState(true);
   const [doc, setDoc] = useState<WikiDoc | null>(null);
   const [currentDoc, setCurrentDoc] = useState<WikiDoc | null>(null);
-  const [showDiff, setShowDiff] = useState<boolean>(!!revision_id);
-  const [diffVariant, setDiffVariant] = useState<"inline" | "split">(
-    "inline"
-  );
+
+  const [diffVariant, setDiffVariant] = useState<"inline" | "split">("inline");
+  const [leftDoc, setLeftDoc] = useState<WikiDoc | null>(null);
+  const [rightDoc, setRightDoc] = useState<WikiDoc | null>(null);
+  const [leftRev, setLeftRev] = useState<number | "current">("current");
+  const [rightRev, setRightRev] = useState<number | "current">("current");
 
   const fetchRecentPage = useCallback(async () => {
     const encoded = encodeURI(title || "");
@@ -62,6 +65,80 @@ const WikiPage = () => {
     });
     return data as WikiDoc;
   }, [revision_id]);
+
+  const fetchRevisionByNumber = useCallback(
+    async (n: number) => {
+      const { data } = await axiosClient.get(`/revision/revision_number`, {
+        params: { title, rev_number: n },
+      });
+      return data as WikiDoc;
+    },
+    [title]
+  );
+
+  useEffect(() => {
+    if (doc && currentDoc) {
+      if (revision_id) {
+        setLeftDoc(doc);
+        setRightDoc(currentDoc);
+        setLeftRev(doc.meta.current_rev_number);
+        setRightRev("current");
+      } else {
+        setLeftDoc(currentDoc);
+        setRightDoc(currentDoc);
+        setLeftRev("current");
+        setRightRev("current");
+      }
+    }
+  }, [revision_id, doc, currentDoc]);
+
+  const selectRevision = useCallback(
+    async (
+      value: string,
+      setRev: (v: number | "current") => void,
+      setDoc: (d: WikiDoc | null) => void
+    ) => {
+      if (value === "current") {
+        setRev("current");
+        setDoc(currentDoc);
+        return;
+      }
+      const n = parseInt(value, 10);
+      if (!Number.isFinite(n) || n < 1) return;
+      try {
+        const d = await fetchRevisionByNumber(n);
+        setRev(n);
+        setDoc(d);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 404) {
+            alert("해당 번호의 리비전을 찾을 수 없습니다.");
+          } else {
+            console.error(error);
+            alert("리비전 조회 중 오류가 발생했습니다.");
+          }
+        } else {
+          console.error(error);
+          alert("리비전 조회 중 오류가 발생했습니다.");
+        }
+      }
+    },
+    [currentDoc, fetchRevisionByNumber]
+  );
+
+  const handleSelectLeft = useCallback(
+    (value: string) => {
+      selectRevision(value, setLeftRev, setLeftDoc);
+    },
+    [selectRevision]
+  );
+
+  const handleSelectRight = useCallback(
+    (value: string) => {
+      selectRevision(value, setRightRev, setRightDoc);
+    },
+    [selectRevision]
+  );
 
   useEffect(() => {
     const loadPage = async () => {
@@ -126,15 +203,64 @@ const WikiPage = () => {
       {exists ? (
         <>
           <p className="mt-[8px] mb-[24px] font-14-400 text-[#212529BF]">
-            최근 수정 시각: {" "}
+            최근 수정 시각:{" "}
             {doc?.meta?.updated_at
               ? format(parseISO(doc?.meta?.updated_at), "yyyy-MM-dd HH:mm:ss")
               : "알 수 없음"}
           </p>
-          {revision_id && doc && currentDoc && (
+          {revision_id && doc && currentDoc && showDiff && (
             <section className="flex flex-col gap-2 p-[12px] mb-[16px] rounded-[6px] border-1 border-[#EEE] bg-[#FAFAFA]">
-              <div className="font-14-600">
-                비교 대상: v{doc.meta.current_rev_number} ↔ 현재
+              <div className="flex items-center gap-2 font-14-600">
+                <span>비교 대상:</span>
+                <select
+                  className="px-2 py-1 border-1 border-[#CCC] rounded-[6px]"
+                  value={leftRev === "current" ? "current" : String(leftRev)}
+                  onChange={(e) => handleSelectLeft(e.target.value)}
+                >
+                  {(() => {
+                    const currentNum =
+                      currentDoc?.meta?.current_rev_number ||
+                      doc?.meta?.current_rev_number ||
+                      1;
+                    const maxNum = currentNum;
+                    return [
+                      <option
+                        key="current"
+                        value="current"
+                      >{`현재(v${currentNum})`}</option>,
+                      ...Array.from({ length: maxNum }, (_, i) => maxNum - i)
+                        .filter((n) => n !== currentNum)
+                        .map((n) => (
+                          <option key={n} value={n}>{`v${n}`}</option>
+                        )),
+                    ];
+                  })()}
+                </select>
+                <span>↔</span>
+                <select
+                  className="px-2 py-1 border-1 border-[#CCC] rounded-[6px]"
+                  value={rightRev === "current" ? "current" : String(rightRev)}
+                  onChange={(e) => handleSelectRight(e.target.value)}
+                >
+                  {(() => {
+                    const currentNum =
+                      currentDoc?.meta?.current_rev_number ||
+                      doc?.meta?.current_rev_number ||
+                      1;
+                    const maxNum = currentNum;
+                    return [
+                      <option
+                        key="current"
+                        value="current"
+                      >{`현재(v${currentNum})`}</option>,
+                      ...Array.from({ length: maxNum }, (_, i) => maxNum - i)
+                        .filter((n) => n !== currentNum)
+                        .map((n) => (
+                          <option key={n} value={n}>{`v${n}`}</option>
+                        )),
+                    ];
+                  })()}
+                </select>
               </div>
               <div className="flex items-center gap-2">
                 <label className="font-14-400">보기 방식</label>
@@ -142,32 +268,45 @@ const WikiPage = () => {
                   className="px-2 py-1 border-1 border-[#CCC] rounded-[6px]"
                   value={diffVariant}
                   onChange={(e) =>
-                    setDiffVariant((e.target.value as "inline" | "split") || "inline")
+                    setDiffVariant(
+                      (e.target.value as "inline" | "split") || "inline"
+                    )
                   }
                 >
                   <option value="inline">인라인</option>
                   <option value="split">양쪽</option>
                 </select>
-                <button
-                  className="px-2 py-1 border-1 border-[#CCC] rounded-[6px] bg-white cursor-pointer"
-                  onClick={() => setShowDiff((s) => !s)}
-                >
-                  {showDiff ? "원문 보기" : "Diff 보기"}
-                </button>
               </div>
-              {showDiff && (
-                <div className="mt-2">
-                  <DiffViewer
-                    leftTitle={`v${doc.meta.current_rev_number}`}
-                    rightTitle="현재"
-                    leftContent={(doc.content?.content as JSONContent[]) || []}
-                    rightContent={
-                      (currentDoc.content?.content as JSONContent[]) || []
-                    }
-                    variant={diffVariant}
-                  />
-                </div>
-              )}
+
+              <div className="mt-2">
+                <DiffViewer
+                  leftTitle={
+                    leftRev === "current"
+                      ? `현재(v${
+                          currentDoc?.meta?.current_rev_number ||
+                          doc?.meta?.current_rev_number ||
+                          1
+                        })`
+                      : `v${leftRev}`
+                  }
+                  rightTitle={
+                    rightRev === "current"
+                      ? `현재(v${
+                          currentDoc?.meta?.current_rev_number ||
+                          doc?.meta?.current_rev_number ||
+                          1
+                        })`
+                      : `v${rightRev}`
+                  }
+                  leftContent={
+                    (leftDoc?.content?.content as JSONContent[]) || []
+                  }
+                  rightContent={
+                    (rightDoc?.content?.content as JSONContent[]) || []
+                  }
+                  variant={diffVariant}
+                />
+              </div>
             </section>
           )}
           <section className="flex flex-col gap-[17px] mb-[14.4px]">

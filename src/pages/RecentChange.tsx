@@ -104,17 +104,32 @@ const RecentChange = () => {
                 )}
               </div>
             </div>
-            <button
-              onClick={() => {
-                navigate(
-                  `/page/${encodeURI(item.title)}?revision_id=${
-                    item.revision_id
-                  }`
-                );
-              }}
-            >
-              보기
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(
+                    `/page/${encodeURI(item.title)}?revision_id=${
+                      item.revision_id
+                    }&show_diff=true`
+                  );
+                }}
+              >
+                비교
+              </button>
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(
+                    `/page/${encodeURI(item.title)}?revision_id=${
+                      item.revision_id
+                    }`
+                  );
+                }}
+              >
+                보기
+              </button>
+            </div>
             <p className="font-15-400">{item.modifier}</p>
             <p className="font-15-400">{timeAgo(item.edited_at)}</p>
           </div>
