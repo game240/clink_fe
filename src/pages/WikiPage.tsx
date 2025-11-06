@@ -7,6 +7,11 @@ import axiosClient from "../apis/axiosClient";
 import { parseISO, format } from "date-fns";
 import ParentLink from "../components/ParentLink";
 import DiffViewer from "../components/DiffViewer";
+import {
+  flattenServerOpsToDiffOps,
+  type ServerGitOp,
+  type DiffOp,
+} from "../utils/diff";
 
 interface WikiDoc {
   meta: {
@@ -52,6 +57,7 @@ const WikiPage = () => {
   const [rightDoc, setRightDoc] = useState<WikiDoc | null>(null);
   const [leftRev, setLeftRev] = useState<number | "current">("current");
   const [rightRev, setRightRev] = useState<number | "current">("current");
+  const [serverOps, setServerOps] = useState<DiffOp[] | null>(null);
 
   const fetchRecentPage = useCallback(async () => {
     const encoded = encodeURI(title || "");
@@ -91,6 +97,39 @@ const WikiPage = () => {
       }
     }
   }, [revision_id, doc, currentDoc]);
+
+  useEffect(() => {
+    const fetchDiff = async () => {
+      if (!showDiff) {
+        setServerOps(null);
+        return;
+      }
+
+      // 문서 상태가 준비되기 전에 호출 시 둘 다 current로 실행되는 버그 해결
+      if (!leftDoc || !rightDoc) {
+        return;
+      }
+
+      try {
+        const { data } = await axiosClient.get("/diff", {
+          params: {
+            title,
+            left_rev: leftRev === "current" ? "current" : leftRev,
+            right_rev: rightRev === "current" ? "current" : rightRev,
+            context: 3,
+          },
+        });
+        const ops = flattenServerOpsToDiffOps(
+          (data?.ops || []) as ServerGitOp[]
+        );
+        setServerOps(ops);
+      } catch (e) {
+        console.error(e);
+        setServerOps(null);
+      }
+    };
+    fetchDiff();
+  }, [title, leftRev, rightRev, showDiff, leftDoc, rightDoc]);
 
   const selectRevision = useCallback(
     async (
@@ -298,13 +337,8 @@ const WikiPage = () => {
                         })`
                       : `v${rightRev}`
                   }
-                  leftContent={
-                    (leftDoc?.content?.content as JSONContent[]) || []
-                  }
-                  rightContent={
-                    (rightDoc?.content?.content as JSONContent[]) || []
-                  }
                   variant={diffVariant}
+                  ops={serverOps ?? undefined}
                 />
               </div>
             </section>

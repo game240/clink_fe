@@ -73,7 +73,7 @@ export function extractLinesFromJSONContent(
   return lines;
 }
 
-// Simple LCS-based diff for arrays of strings
+/** @deprecated 테스트용 함수 (기능 백엔드로 이관) */
 export function diffLines(a: string[], b: string[]): DiffOp[] {
   const n = a.length;
   const m = b.length;
@@ -111,4 +111,45 @@ export function diffLines(a: string[], b: string[]): DiffOp[] {
     ops.push({ type: "add", text: b[j++] });
   }
   return ops;
+}
+
+export type ServerGitOp =
+  | { type: "equal"; lines: string[]; oldStart?: number; newStart?: number }
+  | { type: "add"; lines: string[]; newStart?: number }
+  | { type: "del"; lines: string[]; oldStart?: number }
+  | {
+      type: "modify";
+      oldLines: string[];
+      newLines: string[];
+      oldStart?: number;
+      newStart?: number;
+    };
+
+export function flattenServerOpsToDiffOps(
+  serverOps: ServerGitOp[] = []
+): DiffOp[] {
+  const out: DiffOp[] = [];
+  for (const op of serverOps) {
+    if (op.type === "equal") {
+      for (const line of op.lines) {
+        out.push({ type: "equal", text: line });
+      }
+    } else if (op.type === "add") {
+      for (const line of op.lines) {
+        out.push({ type: "add", text: line });
+      }
+    } else if (op.type === "del") {
+      for (const line of op.lines) {
+        out.push({ type: "remove", text: line });
+      }
+    } else if (op.type === "modify") {
+      for (const line of op.oldLines) {
+        out.push({ type: "remove", text: line });
+      }
+      for (const line of op.newLines) {
+        out.push({ type: "add", text: line });
+      }
+    }
+  }
+  return out;
 }

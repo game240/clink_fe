@@ -1,18 +1,14 @@
 import React from "react";
-import type { JSONContent } from "@tiptap/react";
-import { diffLines, extractLinesFromJSONContent, type DiffOp } from "../utils/diff";
+import { type DiffOp } from "../utils/diff";
 
 interface DiffViewerProps {
   leftTitle?: string;
   rightTitle?: string;
-  leftContent: JSONContent[];
-  rightContent: JSONContent[];
   variant?: "inline" | "split";
+  ops?: DiffOp[]; // server-provided ops (optional)
 }
 
 const lineStyleBase: React.CSSProperties = {
-  fontFamily:
-    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
   fontSize: 13,
   whiteSpace: "pre-wrap",
   padding: "2px 6px",
@@ -49,7 +45,10 @@ const InlineRow: React.FC<{ op: DiffOp }> = ({ op }) => {
   );
 };
 
-const SplitRow: React.FC<{ left?: string; right?: string }> = ({ left, right }) => {
+const SplitRow: React.FC<{ left?: string; right?: string }> = ({
+  left,
+  right,
+}) => {
   const baseCell: React.CSSProperties = {
     ...lineStyleBase,
     width: "100%",
@@ -79,18 +78,15 @@ const SplitRow: React.FC<{ left?: string; right?: string }> = ({ left, right }) 
 const DiffViewer: React.FC<DiffViewerProps> = ({
   leftTitle = "이전",
   rightTitle = "현재",
-  leftContent,
-  rightContent,
   variant = "inline",
+  ops,
 }) => {
-  const leftLines = extractLinesFromJSONContent(leftContent);
-  const rightLines = extractLinesFromJSONContent(rightContent);
-  const ops = diffLines(leftLines, rightLines);
+  const computedOps = ops ?? [];
 
   if (variant === "split") {
     // Build split rows by aligning operations
     const rows: Array<{ left?: string; right?: string }> = [];
-    for (const op of ops) {
+    for (const op of computedOps) {
       if (op.type === "equal") {
         rows.push({ left: op.text, right: op.text });
       } else if (op.type === "remove") {
@@ -124,7 +120,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
   // inline
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {ops.map((op, i) => (
+      {computedOps.map((op, i) => (
         <InlineRow key={i} op={op} />
       ))}
     </div>
