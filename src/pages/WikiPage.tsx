@@ -52,7 +52,7 @@ const WikiPage = () => {
   const [doc, setDoc] = useState<WikiDoc | null>(null);
   const [currentDoc, setCurrentDoc] = useState<WikiDoc | null>(null);
 
-  const [diffVariant, setDiffVariant] = useState<"inline" | "split">("inline");
+  // const [diffVariant, setDiffVariant] = useState<"inline" | "split">("inline");
   const [leftDoc, setLeftDoc] = useState<WikiDoc | null>(null);
   const [rightDoc, setRightDoc] = useState<WikiDoc | null>(null);
   const [leftRev, setLeftRev] = useState<number | "current">("current");
@@ -301,7 +301,7 @@ const WikiPage = () => {
                   })()}
                 </select>
               </div>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <label className="font-14-400">보기 방식</label>
                 <select
                   className="px-2 py-1 border-1 border-[#CCC] rounded-[6px]"
@@ -315,7 +315,7 @@ const WikiPage = () => {
                   <option value="inline">인라인</option>
                   <option value="split">양쪽</option>
                 </select>
-              </div>
+              </div> */}
 
               <div className="mt-2">
                 <DiffViewer
@@ -337,7 +337,7 @@ const WikiPage = () => {
                         })`
                       : `v${rightRev}`
                   }
-                  variant={diffVariant}
+                  // variant={diffVariant}
                   ops={serverOps ?? undefined}
                 />
               </div>
