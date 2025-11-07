@@ -98,6 +98,8 @@ const WikiPage = () => {
     }
   }, [revision_id, doc, currentDoc]);
 
+  const CONTEXT_NUMBER = 3;
+
   useEffect(() => {
     const fetchDiff = async () => {
       if (!showDiff) {
@@ -116,7 +118,7 @@ const WikiPage = () => {
             title,
             left_rev: leftRev === "current" ? "current" : leftRev,
             right_rev: rightRev === "current" ? "current" : rightRev,
-            context: 3,
+            context: CONTEXT_NUMBER,
           },
         });
         const ops = flattenServerOpsToDiffOps(
