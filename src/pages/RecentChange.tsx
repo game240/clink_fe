@@ -50,7 +50,9 @@ const RecentChange = () => {
       const merged = [...prev, ...data.changes];
       const seen = new Set<string>();
       return merged.filter((item) => {
-        if (seen.has(item.revision_id)) return false;
+        if (seen.has(item.revision_id)) {
+          return false;
+        }
         seen.add(item.revision_id);
         return true;
       });
@@ -59,7 +61,9 @@ const RecentChange = () => {
   };
 
   const loadMore = () => {
-    if (!pagination.hasMore) return;
+    if (!pagination.hasMore) {
+      return;
+    }
     setPage((prev) => prev + 1);
   };
 
@@ -69,8 +73,9 @@ const RecentChange = () => {
         <h1 className="font-36-700">최근 변경내역</h1>
       </div>
 
-      <div className="grid grid-cols-[1fr_13rem_13rem] pb-[8px] border-b-[1px] border-[#C9C9C9]">
+      <div className="grid grid-cols-[1fr_13rem_13rem_13rem] pb-[8px] border-b-[1px] border-[#C9C9C9]">
         <p className="font-15-600">문서</p>
+        <p className="font-15-600">기능</p>
         <p className="font-15-600">수정자</p>
         <p className="font-15-600">수정 시간</p>
       </div>
@@ -81,7 +86,7 @@ const RecentChange = () => {
         recentChange.map((item) => (
           <div
             key={item.revision_id}
-            className="grid grid-cols-[1fr_13rem_13rem] py-[12px] border-b-[1px] border-[#F0F0F0] hover:bg-[#FAFAFA]"
+            className="grid grid-cols-[1fr_13rem_13rem_13rem] py-[12px] border-b-[1px] border-[#F0F0F0] hover:bg-[#FAFAFA]"
           >
             <div className="flex items-center gap-2">
               <span
@@ -98,6 +103,32 @@ const RecentChange = () => {
                   <span className="text-red-600">-{item.removedCount}</span>
                 )}
               </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(
+                    `/page/${encodeURI(item.title)}?revision_id=${
+                      item.revision_id
+                    }&show_diff=true`
+                  );
+                }}
+              >
+                비교
+              </button>
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(
+                    `/page/${encodeURI(item.title)}?revision_id=${
+                      item.revision_id
+                    }`
+                  );
+                }}
+              >
+                보기
+              </button>
             </div>
             <p className="font-15-400">{item.modifier}</p>
             <p className="font-15-400">{timeAgo(item.edited_at)}</p>

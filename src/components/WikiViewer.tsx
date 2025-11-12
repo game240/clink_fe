@@ -53,6 +53,37 @@ function ViewerImage({
   );
 }
 
+// Recursively rewrite image src to go through proxy
+const toProxyUrl = (path: string) =>
+  `${import.meta.env.VITE_SERVER_URL}/api/image-proxy?path=${encodeURIComponent(
+    path || ""
+  )}`;
+
+function rewriteImageSrcDeep(node: JSONContent): JSONContent {
+  if (!node) return node;
+
+  if (node.type === "image") {
+    const originalSrc =
+      typeof node.attrs?.src === "string" ? (node.attrs.src as string) : "";
+    return {
+      ...node,
+      attrs: {
+        ...node.attrs,
+        src: toProxyUrl(originalSrc),
+      },
+    };
+  }
+
+  if (node.content && Array.isArray(node.content)) {
+    return {
+      ...node,
+      content: node.content.map(rewriteImageSrcDeep),
+    };
+  }
+
+  return node;
+}
+
 export default function WikiViewer({
   initialContent,
 }: {
@@ -109,21 +140,8 @@ export default function WikiViewer({
           return result;
         });
 
-        // 2) 이미지 노드에 대해 presign URL 요청
-        const contentWithProxy = flatContent.map((node) => {
-          if (node.type === "image" && typeof node.attrs?.src === "string") {
-            return {
-              ...node,
-              attrs: {
-                ...node.attrs,
-                src: `${
-                  import.meta.env.VITE_SERVER_URL
-                }/api/image-proxy?path=${encodeURIComponent(node.attrs.src)}`,
-              },
-            };
-          }
-          return node;
-        });
+        // 2) 이미지 노드에 대해 presign URL 요청 (중첩 노드까지 모두 처리)
+        const contentWithProxy = flatContent.map(rewriteImageSrcDeep);
         // 3) 'details' 기준으로 세그먼트 분할
         const segs: Segment[] = [];
         let buffer: JSONContent[] = [];

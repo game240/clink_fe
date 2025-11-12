@@ -94,7 +94,7 @@ const NavBar = () => {
           "linear-gradient(90deg, #6A39C0 0%, #6A39C0 50%, #3C6FE5 100%)",
       }}
     >
-      <div
+      {/* <div
         className="flex items-center gap-[10px] cursor-pointer"
         onClick={() => navigate("/")}
       >
@@ -202,7 +202,7 @@ const NavBar = () => {
             로그인
           </button>
         )}
-      </div>
+      </div> */}
     </nav>
   );
 };
