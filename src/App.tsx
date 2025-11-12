@@ -22,12 +22,12 @@ const router = createBrowserRouter([
     element: <DefaultLayout />,
     children: [
       {
+        index: true,
+        element: <Landing />,
+      },
+      {
         element: <PageLayout />,
         children: [
-          {
-            path: "",
-            element: <Landing />,
-          },
           {
             path: "organizations",
             element: <Organizations />,
