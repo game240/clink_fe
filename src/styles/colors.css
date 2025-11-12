@@ -2,3 +2,68 @@
   --blue: #0275d8;
   --green: #009900;
 }
+
+@theme {
+  /* Primary color (Blue) */
+  --color-blue-01: #ebf3fe;
+  --color-blue-02: #e2ecfe;
+  --color-blue-03: #c2d8fc;
+  --color-blue-04: #3b82f6;
+  --color-blue-05: #3575dd;
+  --color-blue-06: #2f68c5;
+  --color-blue-07: #2c62b9;
+  --color-blue-08: #234e94;
+  --color-blue-09: #1b3a6f;
+  --color-blue-10: #152e56;
+
+  /* Secondary color (Purple) */
+  --color-purple-01: #f2f0fd;
+  --color-purple-02: #ebe8fc;
+  --color-purple-03: #d5cff8;
+  --color-purple-04: #7864e9;
+  --color-purple-05: #6c5ad2;
+  --color-purple-06: #6050ba;
+  --color-purple-07: #5a4baf;
+  --color-purple-08: #483c8c;
+  --color-purple-09: #362d69;
+  --color-purple-10: #2a2352;
+
+  /* Grey scale */
+  --color-grey-00: #f1f1f2;
+  --color-grey-01: #c2c2c2;
+  --color-grey-02: #b6b6b6;
+  --color-grey-03: #a7a7a7;
+  --color-grey-04: #777777;
+  --color-grey-05: #656565;
+  --color-grey-06: #575757;
+  --color-grey-07: #2a2a2a;
+  --color-grey-08: #1e1e1e;
+  --color-grey-09: #0d0d0d;
+
+  /* Background */
+  --color-card: #f0f1f7;
+  --color-card-2: #f5f6f8;
+
+  /* Aliases */
+  --color-primary-01: var(--color-blue-01);
+  --color-primary-02: var(--color-blue-02);
+  --color-primary-03: var(--color-blue-03);
+  --color-primary-04: var(--color-blue-04);
+  --color-primary-05: var(--color-blue-05);
+  --color-primary-06: var(--color-blue-06);
+  --color-primary-07: var(--color-blue-07);
+  --color-primary-08: var(--color-blue-08);
+  --color-primary-09: var(--color-blue-09);
+  --color-primary-10: var(--color-blue-10);
+
+  --color-secondary-01: var(--color-purple-01);
+  --color-secondary-02: var(--color-purple-02);
+  --color-secondary-03: var(--color-purple-03);
+  --color-secondary-04: var(--color-purple-04);
+  --color-secondary-05: var(--color-purple-05);
+  --color-secondary-06: var(--color-purple-06);
+  --color-secondary-07: var(--color-purple-07);
+  --color-secondary-08: var(--color-purple-08);
+  --color-secondary-09: var(--color-purple-09);
+  --color-secondary-10: var(--color-purple-10);
+}

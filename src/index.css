@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@fontsource/pretendard/index.css";
 
+@import "./styles/colors.css";
+@import "./styles/texts.css";
+
 @layer base {
   h1,
   h2,
