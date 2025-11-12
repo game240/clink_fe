@@ -6,7 +6,7 @@ import magnifier from "../assets/landing/magnifier.png";
 
 const Landing = () => {
   return (
-    <main className="flex flex-col gap-[70px]">
+    <main className="flex flex-col gap-[70px] pb-[100px]">
       <video
         src={landingVideo}
         autoPlay
