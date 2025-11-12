@@ -1,19 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import ic_clink from "../assets/ic_clink.svg";
+import ic_clink from "../../assets/ic_clink.svg";
 import { useEffect, useRef, useState } from "react";
-import axiosClient from "../apis/axiosClient";
-import ic_organization from "../assets/navbar/ic_organization.svg";
-import ic_create_club from "../assets/navbar/ic_create_club.svg";
-import ic_notification from "../assets/navbar/ic_notification.svg";
-import ic_circle_user from "../assets/navbar/ic_circle_user.svg";
-import ic_logout from "../assets/navbar/ic_logout.svg";
-import ic_search from "../assets/navbar/ic_search.svg";
-import ic_login from "../assets/navbar/ic_login.svg";
-import useOutsideClick from "../hooks/useOutsideClick";
-import { useAuth } from "../contexts/AuthContext";
+import axiosClient from "../../apis/axiosClient";
+import ic_organization from "../../assets/navbar/ic_organization.svg";
+import ic_create_club from "../../assets/navbar/ic_create_club.svg";
+import ic_notification from "../../assets/navbar/ic_notification.svg";
+import ic_circle_user from "../../assets/navbar/ic_circle_user.svg";
+import ic_logout from "../../assets/navbar/ic_logout.svg";
+import ic_search from "../../assets/navbar/ic_search.svg";
+import ic_login from "../../assets/navbar/ic_login.svg";
+import useOutsideClick from "../../hooks/useOutsideClick";
+import { useAuth } from "../../contexts/AuthContext";
 import { twMerge } from "tailwind-merge";
-import { supabase } from "../libs/supabaseClient";
-import NoticeItem from "./navbar/NoticeItem";
+import { supabase } from "../../libs/supabaseClient";
+import NoticeItem from "./NoticeItem";
 
 const NavBar = () => {
   const [searchValue, setSearchValue] = useState("");
