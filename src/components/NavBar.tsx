@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
 import ic_clink from "../assets/ic_clink.svg";
 import { useEffect, useRef, useState } from "react";
 import axiosClient from "../apis/axiosClient";
@@ -14,6 +13,7 @@ import useOutsideClick from "../hooks/useOutsideClick";
 import { useAuth } from "../contexts/AuthContext";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "../libs/supabaseClient";
+import NoticeItem from "./navbar/NoticeItem";
 
 const NavBar = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -25,6 +25,21 @@ const NavBar = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  const notice = true; // useState로 대체
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const noticeRef = useRef<HTMLDivElement>(null);
+  const noticeBtnRef = useRef<HTMLButtonElement>(null);
+  const { isOutside: isNoticeOutside } = useOutsideClick({
+    ref: noticeRef,
+    additionalRefs: [noticeBtnRef],
+  });
+
+  useEffect(() => {
+    if (isNoticeOutside) {
+      setIsNoticeOpen(false);
+    }
+  }, [isNoticeOutside]);
 
   // 로그인
   // const userRef = useRef(null);
@@ -108,7 +123,7 @@ const NavBar = () => {
         </div>
       </section>
 
-      <section className="flex">
+      <section className="flex relative">
         <div className="flex items-center gap-[20px] relative mr-[88px]">
           <div className="flex gap-[15px] px-[24px] py-[11px] w-[588px] h-[46px] rounded-[30px] border-[1px] border-gray-01 bg-card">
             <img src={ic_search} alt="" />
@@ -159,7 +174,13 @@ const NavBar = () => {
         </div>
 
         <div className="flex items-center gap-[35px]">
-          <button className={twMerge("cursor-pointer", !user && "opacity-0")}>
+          <button
+            className={twMerge("cursor-pointer", !user && "opacity-0")}
+            ref={noticeBtnRef}
+            onClick={() => {
+              setIsNoticeOpen(!isNoticeOpen);
+            }}
+          >
             <img src={ic_notification} alt="" />
           </button>
           <button className={twMerge("cursor-pointer", !user && "opacity-0")}>
@@ -175,6 +196,19 @@ const NavBar = () => {
             </button>
           )}
         </div>
+        {isNoticeOpen && (
+          <div
+            className="absolute top-0 right-[78px] translate-y-[46px] flex flex-col gap-[20px] p-[25px] w-[473px] bg-white rounded-[12px] z-10"
+            ref={noticeRef}
+          >
+            <p className="text-title-md-b text-gray-07">알림</p>
+            {notice ? (
+              <NoticeItem />
+            ) : (
+              <p className="text-text-md-m text-gray-07">알림이 없습니다.</p>
+            )}
+          </div>
+        )}
       </section>
     </nav>
   );
