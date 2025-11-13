@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import ic_clink from "../../assets/ic_clink.svg";
 import { useEffect, useRef, useState } from "react";
-import axiosClient from "../../apis/axiosClient";
+// import axiosClient from "../../apis/axiosClient";
 import ic_organization from "../../assets/navbar/ic_organization.svg";
 import ic_create_club from "../../assets/navbar/ic_create_club.svg";
 import ic_notification from "../../assets/navbar/ic_notification.svg";
 import ic_circle_user from "../../assets/navbar/ic_circle_user.svg";
 import ic_logout from "../../assets/navbar/ic_logout.svg";
-import ic_search from "../../assets/navbar/ic_search.svg";
+// import ic_search from "../../assets/navbar/ic_search.svg";
 import ic_login from "../../assets/navbar/ic_login.svg";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import { useAuth } from "../../contexts/AuthContext";
@@ -16,15 +16,15 @@ import { supabase } from "../../libs/supabaseClient";
 import NoticeItem from "./NoticeItem";
 
 const NavBar = () => {
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
 
   const { user } = useAuth();
   const navigate = useNavigate();
 
   // 검색
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  // const [suggestions, setSuggestions] = useState<string[]>([]);
+  // const [showSuggestions, setShowSuggestions] = useState(false);
+  // const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const notice = true; // useState로 대체
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
@@ -45,58 +45,58 @@ const NavBar = () => {
   // const userRef = useRef(null);
   // const { isOutside } = useOutsideClick({ ref: userRef });
 
-  const fetchSuggestions = async (q: string) => {
-    if (!q) {
-      return setSuggestions([]);
-    }
+  // const fetchSuggestions = async (q: string) => {
+  //   if (!q) {
+  //     return setSuggestions([]);
+  //   }
 
-    try {
-      const { data } = await axiosClient.get("/search-autocomplete", {
-        params: { q },
-      });
-      setSuggestions(data);
-    } catch (error) {
-      console.error("Autocomplete axios error:", error);
-      setSuggestions([]);
-    }
-  };
+  //   try {
+  //     const { data } = await axiosClient.get("/search-autocomplete", {
+  //       params: { q },
+  //     });
+  //     setSuggestions(data);
+  //   } catch (error) {
+  //     console.error("Autocomplete axios error:", error);
+  //     setSuggestions([]);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    debounceRef.current = setTimeout(() => {
-      fetchSuggestions(searchValue.trim());
-    }, 200);
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [searchValue]);
+  // useEffect(() => {
+  //   if (debounceRef.current) {
+  //     clearTimeout(debounceRef.current);
+  //   }
+  //   debounceRef.current = setTimeout(() => {
+  //     fetchSuggestions(searchValue.trim());
+  //   }, 200);
+  //   return () => {
+  //     if (debounceRef.current) {
+  //       clearTimeout(debounceRef.current);
+  //     }
+  //   };
+  // }, [searchValue]);
 
-  useEffect(() => {
-    setShowSuggestions(true);
-  }, [suggestions]);
+  // useEffect(() => {
+  //   setShowSuggestions(true);
+  // }, [suggestions]);
 
-  // 연관검색어 리스트 ref
-  const suggRef = useRef<HTMLUListElement>(null);
-  const { isOutside } = useOutsideClick({ ref: suggRef });
+  // // 연관검색어 리스트 ref
+  // const suggRef = useRef<HTMLUListElement>(null);
+  // const { isOutside } = useOutsideClick({ ref: suggRef });
 
-  useEffect(() => {
-    if (isOutside) {
-      setShowSuggestions(false);
-    }
-  }, [isOutside]);
+  // useEffect(() => {
+  //   if (isOutside) {
+  //     setShowSuggestions(false);
+  //   }
+  // }, [isOutside]);
 
   // onBlur 시, 다음 포커스 대상이 리스트 내부면 닫지 않도록
-  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const next = e.relatedTarget as HTMLElement | null;
-    if (next && suggRef.current?.contains(next)) {
-      return;
-    }
-    setShowSuggestions(false);
-  };
+  // const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  //   const next = e.relatedTarget as HTMLElement | null;
+  //   if (next && suggRef.current?.contains(next)) {
+  //     return;
+  //   }
+  //   setShowSuggestions(false);
+  // };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -125,7 +125,7 @@ const NavBar = () => {
 
       <section className="flex relative">
         <div className="flex items-center gap-[20px] relative mr-[88px]">
-          <div className="flex gap-[15px] px-[24px] py-[11px] w-[588px] h-[46px] rounded-[30px] border-[1px] border-gray-01 bg-card">
+          {/* <div className="flex gap-[15px] px-[24px] py-[11px] w-[588px] h-[46px] rounded-[30px] border-[1px] border-gray-01 bg-card">
             <img src={ic_search} alt="" />
             <input
               className="flex flex-1 text-text-md-r placeholder:text-gray-04 focus:outline-none"
@@ -170,7 +170,7 @@ const NavBar = () => {
                 ))}
               </ul>
             )}
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center gap-[35px]">
