@@ -13,6 +13,7 @@ interface ClubResponse {
   location: string;
   members: number;
   ord: number;
+  thumbnailUrl: string | null;
 }
 
 const Landing = () => {
@@ -55,6 +56,7 @@ const Landing = () => {
                   location={club.location}
                   members={club.members}
                   description={club.description}
+                  thumbnailUrl={club.thumbnailUrl}
                 />
               ))}
             </section>

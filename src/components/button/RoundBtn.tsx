@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { type ButtonHTMLAttributes } from "react";
 
 interface RoundBtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  color?: "primary";
+  color?: "primary" | "gray";
 }
 
 const RoundBtn = ({
@@ -12,7 +12,9 @@ const RoundBtn = ({
 }: RoundBtnProps) => {
   let colorClassName;
   if (color === "primary") {
-    colorClassName = "bg-primary-04 text-white";
+    colorClassName = "bg-primary-04 text-white disabled:bg-primary-03";
+  } else if (color === "gray") {
+    colorClassName = "bg-gray-00 text-gray-04";
   }
   return (
     <button

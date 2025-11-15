@@ -9,6 +9,7 @@ interface ClubListItemProps {
   location: string;
   members: number;
   description: string;
+  thumbnailUrl: string | null;
 }
 
 const ClubListItem = ({
@@ -16,10 +17,14 @@ const ClubListItem = ({
   location,
   members,
   description,
+  thumbnailUrl,
 }: ClubListItemProps) => {
   return (
     <div className="flex flex-col gap-[20px] w-[340px]">
-      <div className="w-full aspect-square rounded-[20px] bg-gray-200"></div>
+      <div
+        className="w-full aspect-square rounded-[20px] border border-gray-01 bg-contain bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${thumbnailUrl})` }}
+      ></div>
       <section>
         <div className="flex justify-between w-full">
           <p className="text-title-md-b">{name}</p>
