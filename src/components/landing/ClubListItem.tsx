@@ -38,7 +38,7 @@ const ClubListItem = ({
         </div>
         <div className="relative w-[320px] h-[84px]">
           <img src={speech_bubble} alt="" />
-          <p className="absolute bottom-0 left-0 p-[16px] text-text-md-m text-gray-07">
+          <p className="absolute bottom-0 left-0 h-[72px] p-[16px] text-text-md-m text-gray-07">
             {description}
           </p>
         </div>

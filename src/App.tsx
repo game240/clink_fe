@@ -15,6 +15,7 @@ import WikiSearch from "./pages/WikiSearch";
 import RecentChange from "./pages/RecentChange";
 import Landing from "./pages/Landing";
 import Organizations from "./pages/Organizations";
+import CreateClub from "./pages/CreateClub";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,15 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Landing />,
+      },
+      {
+        path: "club",
+        children: [
+          {
+            path: "create",
+            element: <CreateClub />,
+          },
+        ],
       },
       {
         element: <PageLayout />,
