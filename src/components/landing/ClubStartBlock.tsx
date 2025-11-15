@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import RoundBtn from "../button/RoundBtn";
 
 interface ClubStartBlockProps {
   className?: string;
@@ -27,12 +28,9 @@ const ClubStartBlock = ({
         <p className="mt-[13px] mb-[33px] text-title-md-r text-gray-07">
           {description}
         </p>
-        <button
-          className="flex justify-center items-center w-[148px] h-[68px] rounded-[12px] bg-white text-title-md-b text-gray-05 cursor-pointer"
-          onClick={onClick}
-        >
+        <RoundBtn color="primary" onClick={onClick}>
           바로가기
-        </button>
+        </RoundBtn>
       </div>
       <img src={src} alt="" />
     </div>
