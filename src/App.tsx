@@ -16,11 +16,11 @@ import RecentChange from "./pages/RecentChange";
 import Landing from "./pages/Landing";
 import Organizations from "./pages/Organizations";
 import CreateClub from "./pages/CreateClub";
+import DefaultLayoutV2 from "./layouts/DefaultLayoutV2";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <DefaultLayout />,
+    element: <DefaultLayoutV2 />,
     children: [
       {
         index: true,
@@ -35,6 +35,11 @@ const router = createBrowserRouter([
           },
         ],
       },
+    ],
+  },
+  {
+    element: <DefaultLayout />,
+    children: [
       {
         element: <PageLayout />,
         children: [
