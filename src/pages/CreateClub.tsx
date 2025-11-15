@@ -6,6 +6,8 @@ import { AxiosError } from "axios";
 import ic_plus from "../assets/create_club/ic_plus.svg";
 import ic_delete from "../assets/create_club/ic_delete.svg";
 import RoundBtn from "../components/button/RoundBtn";
+import Dialog from "@mui/material/Dialog";
+import { twJoin } from "tailwind-merge";
 
 type CreateClubResponse = {
   club: {
@@ -34,6 +36,8 @@ const CreateClub = () => {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [openThumbnailDeleteDialog, setOpenThumbnailDeleteDialog] =
+    useState(false);
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -123,9 +127,12 @@ const CreateClub = () => {
         <section className="flex flex-col gap-[20px]">
           <h2 className="text-title-lg-b">동아리 대표 사진 등록</h2>
           <div
-            className="flex justify-center items-center relative size-[304px] rounded-[20px] border border-gray-01 bg-contain bg-center bg-no-repeat cursor-pointer"
+            className={twJoin(
+              "flex justify-center items-center relative size-[304px] rounded-[20px] border border-gray-01 bg-contain bg-center bg-no-repeat",
+              !thumbnail ? "cursor-pointer" : "cursor-default"
+            )}
             onClick={() => {
-              if (fileInputRef.current) {
+              if (!thumbnail && fileInputRef.current) {
                 fileInputRef.current.click();
               }
             }}
@@ -135,9 +142,9 @@ const CreateClub = () => {
             {thumbnail && (
               <button
                 className="absolute top-[20px] right-[20px] cursor-pointer z-10"
+                type="button"
                 onClick={() => {
-                  setThumbnail(null);
-                  setThumbnailFile(null);
+                  setOpenThumbnailDeleteDialog(true);
                 }}
               >
                 <img src={ic_delete} alt="" />
@@ -164,6 +171,60 @@ const CreateClub = () => {
             }}
           />
         </section>
+
+        <Dialog
+          open={openThumbnailDeleteDialog}
+          onClose={() => {
+            setOpenThumbnailDeleteDialog(false);
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: 0,
+                paddingTop: "60px",
+                paddingBottom: "50px",
+                width: "460px",
+                height: "278px",
+                borderRadius: "12px",
+              },
+            },
+          }}
+        >
+          <div className="flex flex-col gap-[20px]">
+            <h1 className="text-[24px] font-bold">
+              동아리 대표 사진을 삭제하시겠어요?
+            </h1>
+            <p className="typo-text-lg-m text-neutral-gray-08">
+              대표 사진을 삭제하면 다시 등록해야 합니다.
+            </p>
+          </div>
+          <div className="flex justify-center gap-[30px] w-full">
+            <RoundBtn
+              className="w-[148px] h-[56px]"
+              color="gray"
+              onClick={() => {
+                setOpenThumbnailDeleteDialog(false);
+              }}
+            >
+              닫기
+            </RoundBtn>
+            <RoundBtn
+              className="w-[148px] h-[56px]"
+              color="primary"
+              onClick={() => {
+                setThumbnail(null);
+                setThumbnailFile(null);
+                setOpenThumbnailDeleteDialog(false);
+              }}
+            >
+              삭제
+            </RoundBtn>
+          </div>
+        </Dialog>
 
         <section className="flex flex-col gap-[20px]">
           <h2 className="text-title-lg-b">동아리 이름</h2>
