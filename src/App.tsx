@@ -31,7 +31,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "create",
-            element: <CreateClub />,
+            element: (
+              <ProtectedRoute>
+                <CreateClub />
+              </ProtectedRoute>
+            ),
           },
         ],
       },
