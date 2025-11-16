@@ -110,7 +110,14 @@ const NavBar = () => {
   return (
     <nav className="flex justify-between items-center px-[12.083333333333333333333333333333%] w-full h-[84px] bg-white">
       <section className="flex items-center gap-[80px]">
-        <img className="w-[112px]" src={ic_clink} alt="clink" />
+        <button
+          className="cursor-pointer"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <img className="w-[112px]" src={ic_clink} alt="clink" />
+        </button>
         <div className="flex items-center gap-[51px]">
           <button className="flex items-center gap-[7px] cursor-pointer">
             <img src={ic_organization} alt="" />
