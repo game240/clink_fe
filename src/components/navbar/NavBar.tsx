@@ -116,7 +116,12 @@ const NavBar = () => {
             <img src={ic_organization} alt="" />
             <p className="text-head-sm-b">내 동아리</p>
           </button>
-          <button className="flex items-center gap-[7px] cursor-pointer">
+          <button
+            className="flex items-center gap-[7px] cursor-pointer"
+            onClick={() => {
+              navigate("/club/create");
+            }}
+          >
             <img src={ic_create_club} alt="" />
             <p className="text-head-sm-b">동아리 생성</p>
           </button>

@@ -5,6 +5,8 @@ import pencil from "../assets/landing/pencil.png";
 import magnifier from "../assets/landing/magnifier.png";
 import { useEffect, useState } from "react";
 import axiosClient from "../apis/axiosClient";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface ClubResponse {
   id: string;
@@ -18,6 +20,8 @@ interface ClubResponse {
 
 const Landing = () => {
   const [clubList, setCLubList] = useState<ClubResponse[]>([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -30,7 +34,7 @@ const Landing = () => {
     } catch (error) {
       console.error("GET /api/club Error:", error);
     }
-  }, []);
+  }, [user]);
 
   return (
     <main className="flex flex-col gap-[70px] pb-[100px]">
@@ -73,7 +77,9 @@ const Landing = () => {
               title="동아리 생성"
               description="새로운 동아리를 만들고 싶다면?"
               src={pencil}
-              onClick={() => {}}
+              onClick={() => {
+                navigate("/club/create");
+              }}
             />
             <ClubStartBlock
               className="bg-secondary-02"
