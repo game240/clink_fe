@@ -126,7 +126,7 @@ const NavBar = () => {
           <button
             className="flex items-center gap-[7px] cursor-pointer"
             onClick={() => {
-              navigate("/club/create");
+              navigate("/create");
             }}
           >
             <img src={ic_create_club} alt="" />

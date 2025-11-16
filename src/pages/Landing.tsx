@@ -78,7 +78,7 @@ const Landing = () => {
               description="새로운 동아리를 만들고 싶다면?"
               src={pencil}
               onClick={() => {
-                navigate("/club/create");
+                navigate("/create");
               }}
             />
             <ClubStartBlock

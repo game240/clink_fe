@@ -17,6 +17,8 @@ import Landing from "./pages/Landing";
 import Organizations from "./pages/Organizations";
 import CreateClub from "./pages/CreateClub";
 import DefaultLayoutV2 from "./layouts/DefaultLayoutV2";
+import PaddingLayout from "./layouts/PaddingLayout";
+import Club from "./pages/club/Club";
 
 const router = createBrowserRouter([
   {
@@ -27,17 +29,22 @@ const router = createBrowserRouter([
         element: <Landing />,
       },
       {
-        path: "club",
-        children: [
-          {
-            path: "create",
-            element: (
-              <ProtectedRoute>
-                <CreateClub />
-              </ProtectedRoute>
-            ),
-          },
-        ],
+        path: "create",
+        element: (
+          <ProtectedRoute>
+            <CreateClub />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "club",
+    element: <PaddingLayout />,
+    children: [
+      {
+        index: true,
+        element: <Club />,
       },
     ],
   },
