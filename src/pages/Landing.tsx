@@ -1,5 +1,4 @@
 import landingVideo from "../assets/videos/landing.mp4";
-import ClubListItem from "../components/landing/ClubListItem";
 import ClubStartBlock from "../components/landing/ClubStartBlock";
 import pencil from "../assets/landing/pencil.png";
 import magnifier from "../assets/landing/magnifier.png";
@@ -7,16 +6,8 @@ import { useEffect, useState } from "react";
 import axiosClient from "../apis/axiosClient";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-interface ClubResponse {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  members: number;
-  ord: number;
-  thumbnailUrl: string | null;
-}
+import type { ClubResponse } from "../types/landing/club";
+import MyClubsList from "../components/landing/MyClubsList";
 
 const Landing = () => {
   const [clubList, setCLubList] = useState<ClubResponse[]>([]);
@@ -47,25 +38,7 @@ const Landing = () => {
       />
 
       <section className="flex flex-col gap-[70px] px-[12.083333333333333333333333333333%]">
-        {clubList.length > 0 && (
-          <section className="flex flex-col gap-[50px]">
-            <h1 className="text-head-lg-b text-gray-08">
-              내가 속한 동아리 바로가기
-            </h1>
-            <section className="grid grid-cols-4 gap-x-[32px] gap-y-[50px]">
-              {clubList.map((club) => (
-                <ClubListItem
-                  key={club.id}
-                  name={club.name}
-                  location={club.location}
-                  members={club.members}
-                  description={club.description}
-                  thumbnailUrl={club.thumbnailUrl}
-                />
-              ))}
-            </section>
-          </section>
-        )}
+        <MyClubsList clubList={clubList}>나의 동아리 바로가기</MyClubsList>
 
         <section className="flex flex-col gap-[50px]">
           <h1 className="text-head-lg-b text-gray-08">
