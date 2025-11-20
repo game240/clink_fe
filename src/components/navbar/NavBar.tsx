@@ -2,8 +2,6 @@ import { useNavigate } from "react-router-dom";
 import ic_clink from "../../assets/ic_clink.svg";
 import { useEffect, useRef, useState } from "react";
 // import axiosClient from "../../apis/axiosClient";
-import ic_organization from "../../assets/navbar/ic_organization.svg";
-import ic_create_club from "../../assets/navbar/ic_create_club.svg";
 import ic_notification from "../../assets/navbar/ic_notification.svg";
 import ic_circle_user from "../../assets/navbar/ic_circle_user.svg";
 import ic_logout from "../../assets/navbar/ic_logout.svg";
@@ -108,7 +106,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center px-[12.083333333333333333333333333333%] w-full h-[84px] bg-white">
+    <nav className="flex justify-between items-center px-[12.083333333333333333333333333333%] w-full h-[84px] bg-white border-b border-gray-01">
       <section className="flex items-center gap-[80px]">
         <button
           className="cursor-pointer"
@@ -119,9 +117,13 @@ const NavBar = () => {
           <img className="w-[112px]" src={ic_clink} alt="clink" />
         </button>
         <div className="flex items-center gap-[51px]">
-          <button className="flex items-center gap-[7px] cursor-pointer">
-            <img src={ic_organization} alt="" />
-            <p className="text-head-sm-b">내 동아리</p>
+          <button
+            className="flex items-center gap-[7px] cursor-pointer"
+            onClick={() => {
+              navigate("/my-clubs");
+            }}
+          >
+            <p className="text-head-sm-b">나의 동아리</p>
           </button>
           <button
             className="flex items-center gap-[7px] cursor-pointer"
@@ -129,8 +131,10 @@ const NavBar = () => {
               navigate("/create");
             }}
           >
-            <img src={ic_create_club} alt="" />
             <p className="text-head-sm-b">동아리 생성</p>
+          </button>
+          <button className="flex items-center gap-[7px] cursor-pointer">
+            <p className="text-head-sm-b">동아리 검색</p>
           </button>
         </div>
       </section>
