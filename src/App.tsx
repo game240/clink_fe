@@ -17,8 +17,9 @@ import Landing from "./pages/Landing";
 import Organizations from "./pages/Organizations";
 import CreateClub from "./pages/CreateClub";
 import DefaultLayoutV2 from "./layouts/DefaultLayoutV2";
-import PaddingLayout from "./layouts/PaddingLayout";
-import Club from "./pages/club/Club";
+import AsideLayout from "./layouts/AsideLayout";
+import MyClubs from "./pages/MyClubs";
+import ClubArchive from "./pages/club/ClubArchive";
 
 const router = createBrowserRouter([
   {
@@ -36,15 +37,23 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "my-clubs",
+        element: (
+          <ProtectedRoute>
+            <MyClubs />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
     path: "club",
-    element: <PaddingLayout />,
+    element: <AsideLayout />,
     children: [
       {
-        index: true,
-        element: <Club />,
+        path: "archive",
+        element: <ClubArchive />,
       },
     ],
   },
