@@ -1,7 +1,7 @@
 import rightArrow from "../assets/ic_right.svg";
 import { useEffect, useState } from "react";
 import axiosClient from "../apis/axiosClient";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { timeAgo } from "../utils/timeAgo";
 
 interface RecentChangedPage {
@@ -17,13 +17,20 @@ const RightPageBlockContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [searchParams] = useSearchParams();
+  const clubId = searchParams.get("clubId");
+
   useEffect(() => {
     const fetchRecentChange = async () => {
-      const { data } = await axiosClient.get("/recent-change/pages");
+      const { data } = await axiosClient.get("/recent-change/pages", {
+        params: {
+          clubId,
+        },
+      });
       setRecentChangedPages(data.items);
     };
     fetchRecentChange();
-  }, [location.pathname]);
+  }, [location.pathname, clubId]);
 
   return (
     <section className="w-full h-full">
@@ -31,7 +38,7 @@ const RightPageBlockContent = () => {
         <p className="font-18-600">최근 변경</p>
         <button
           className="cursor-pointer"
-          onClick={() => navigate("/recent-change")}
+          onClick={() => navigate(`/recent-change?clubId=${clubId}`)}
         >
           <img
             className="w-[10px] h-[17px]"
@@ -48,7 +55,9 @@ const RightPageBlockContent = () => {
           >
             <li
               className="font-15-400 break-words text-[var(--blue)] cursor-pointer hover:text-[#0263b8] hover:underline line-clamp-1"
-              onClick={() => navigate(`/page/${encodeURI(page.title)}`)}
+              onClick={() =>
+                navigate(`/page/${encodeURI(page.title)}?clubId=${clubId}`)
+              }
             >
               {page.title}
             </li>

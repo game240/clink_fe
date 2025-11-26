@@ -5,6 +5,7 @@ import NewPageDialog from "../../components/club/archive/NewPageDialog";
 import axiosClient from "../../apis/axiosClient";
 import { useSearchParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface ClubArchiveList {
   id: string;
@@ -122,7 +123,14 @@ const ClubArchive = () => {
                     {knowhowTotal -
                       ((currentKnowhowPage - 1) * pageSize + index)}
                   </p>
-                  <p className="typo-text-lg-r text-gray-09">{item.title}</p>
+                  <Link
+                    className="typo-text-lg-r text-gray-09 cursor-pointer hover:underline"
+                    to={`/page/${item.title}?clubId=${clubId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.title}
+                  </Link>
                   <p className="typo-text-lg-r text-gray-09">
                     {format(parseISO(item.created_at), "yyyy-MM-dd")}
                   </p>

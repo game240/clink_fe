@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../apis/axiosClient";
 import { timeAgo } from "../utils/timeAgo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export interface Revision {
   revision_id: string;
@@ -33,13 +33,16 @@ const RecentChange = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
     fetchPage(page);
-  }, [page]);
+  }, [page, searchParams]);
 
   const fetchPage = async (pageNum: number) => {
     const { data } = await axiosClient.get("/recent-change", {
       params: {
+        clubId: searchParams.get("clubId"),
         limit: PAGE_SIZE,
         offset: (pageNum - 1) * PAGE_SIZE, // 레코드 오프셋
       },
