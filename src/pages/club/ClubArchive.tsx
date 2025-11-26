@@ -1,43 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import PaginationBar from "../../components/pagination/PaginationBar";
 import NewPageDialog from "../../components/club/archive/NewPageDialog";
+import axiosClient from "../../apis/axiosClient";
+import { useSearchParams } from "react-router-dom";
+import { format, parseISO } from "date-fns";
+
+interface ClubArchiveList {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  club_id: string;
+  is_public: boolean;
+  is_knowhow: boolean;
+}
+
+interface ClubArchiveListsResponse {
+  knowhow: ClubArchiveList[];
+  work: ClubArchiveList[];
+  stats: {
+    knowhowTotal: number;
+    workTotal: number;
+    total: number;
+    pageSize: number;
+    knowhowTotalPages: number;
+    workTotalPages: number;
+  };
+}
 
 const ClubArchive = () => {
-  const nohowWikiList = [
-    {
-      no: 1,
-      title: "제목제목",
-      createdAt: "2025.01.01",
-      updatedAt: "2025.01.01 00:00:00",
-    },
-    {
-      no: 2,
-      title: "제목제목",
-      createdAt: "2025.01.01",
-      updatedAt: "2025.01.01 00:00:00",
-    },
-    {
-      no: 3,
-      title: "제목제목",
-      createdAt: "2025.01.01",
-      updatedAt: "2025.01.01 00:00:00",
-    },
-    {
-      no: 4,
-      title: "제목제목",
-      createdAt: "2025.01.01",
-      updatedAt: "2025.01.01 00:00:00",
-    },
-    {
-      no: 5,
-      title: "제목제목",
-      createdAt: "2025.01.01",
-      updatedAt: "2025.01.01 00:00:00",
-    },
-  ];
+  const [knowhowWikiList, setKnowhowWikiList] = useState<ClubArchiveList[]>([]);
+  const [workWikiList, setWorkWikiList] = useState<ClubArchiveList[]>([]);
 
-  const workWikiList = nohowWikiList.slice(0, 3);
+  const [currentKnowhowPage, setCurrentKnowhowPage] = useState(1);
+  const [knowhowTotal, setKnowhowTotal] = useState(1);
+  const [knowhowTotalPages, setKnowhowTotalPages] = useState(1);
+  const [currentWorkPage, setCurrentWorkPage] = useState(1);
+  const [workTotal, setWorkTotal] = useState(1);
+  const [workTotalPages, setWorkTotalPages] = useState(1);
+
+  const pageSize = 5;
+
+  const [searchParams] = useSearchParams();
+  const clubId = searchParams.get("clubId");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axiosClient.get<ClubArchiveListsResponse>(
+          "/page/club/summary",
+          {
+            params: { clubId },
+          }
+        );
+        setKnowhowWikiList(data.knowhow);
+        setWorkWikiList(data.work);
+        setKnowhowTotal(data.stats.knowhowTotal);
+        setWorkTotal(data.stats.workTotal);
+        setKnowhowTotalPages(data.stats.knowhowTotalPages);
+        setWorkTotalPages(data.stats.workTotalPages);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [clubId]);
+
+  const pagedKnowhowList = knowhowWikiList.slice(
+    (currentKnowhowPage - 1) * pageSize,
+    currentKnowhowPage * pageSize
+  );
+
+  const pagedWorkList = workWikiList.slice(
+    (currentWorkPage - 1) * pageSize,
+    currentWorkPage * pageSize
+  );
 
   // 페이지 작성
   const [openNewKnowhow, setOpenNewKnowhow] = useState(false);
@@ -64,7 +104,7 @@ const ClubArchive = () => {
         <NewPageDialog
           open={openNewKnowhow}
           setOpen={setOpenNewKnowhow}
-          wikiType="nohow"
+          wikiType="knowhow"
         />
 
         <div className="flex flex-col gap-[26px]">
@@ -75,23 +115,30 @@ const ClubArchive = () => {
               <p className="typo-text-lg-b text-gray-07">작성일</p>
               <p className="typo-text-lg-b text-gray-07">수정시각</p>
             </div>
-            {nohowWikiList.map((item) => (
+            {pagedKnowhowList.map((item, index) => (
               <>
                 <section className="grid grid-cols-[70px_1fr_100px_214px] grid-rows-[62px] gap-x-[50px] items-center justify-items-center">
-                  <p className="typo-text-lg-r text-gray-09">{item.no}</p>
+                  <p className="typo-text-lg-r text-gray-09">
+                    {knowhowTotal -
+                      ((currentKnowhowPage - 1) * pageSize + index)}
+                  </p>
                   <p className="typo-text-lg-r text-gray-09">{item.title}</p>
                   <p className="typo-text-lg-r text-gray-09">
-                    {item.createdAt}
+                    {format(parseISO(item.created_at), "yyyy-MM-dd")}
                   </p>
                   <p className="typo-text-lg-r text-gray-09">
-                    {item.updatedAt}
+                    {format(parseISO(item.updated_at), "yyyy-MM-dd HH:mm:ss")}
                   </p>
                 </section>
                 <div className="flex-1 h-[1px] bg-gray-00" />
               </>
             ))}
           </section>
-          <PaginationBar />
+          <PaginationBar
+            currentPage={currentKnowhowPage}
+            setCurrentPage={setCurrentKnowhowPage}
+            totalPages={knowhowTotalPages}
+          />
         </div>
       </section>
 
@@ -125,23 +172,29 @@ const ClubArchive = () => {
               <p className="typo-text-lg-b text-gray-07">작성일</p>
               <p className="typo-text-lg-b text-gray-07">수정시각</p>
             </div>
-            {workWikiList.map((item) => (
+            {pagedWorkList.map((item, index) => (
               <>
                 <section className="grid grid-cols-[70px_1fr_100px_214px] grid-rows-[62px] gap-x-[50px] items-center justify-items-center">
-                  <p className="typo-text-lg-r text-gray-09">{item.no}</p>
+                  <p className="typo-text-lg-r text-gray-09">
+                    {workTotal - ((currentWorkPage - 1) * pageSize + index)}
+                  </p>
                   <p className="typo-text-lg-r text-gray-09">{item.title}</p>
                   <p className="typo-text-lg-r text-gray-09">
-                    {item.createdAt}
+                    {format(parseISO(item.created_at), "yyyy-MM-dd")}
                   </p>
                   <p className="typo-text-lg-r text-gray-09">
-                    {item.updatedAt}
+                    {format(parseISO(item.updated_at), "yyyy-MM-dd HH:mm:ss")}
                   </p>
                 </section>
                 <div className="flex-1 h-[1px] bg-gray-00" />
               </>
             ))}
           </section>
-          <PaginationBar />
+          <PaginationBar
+            currentPage={currentWorkPage}
+            setCurrentPage={setCurrentWorkPage}
+            totalPages={workTotalPages}
+          />
         </div>
       </section>
     </main>

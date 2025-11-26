@@ -1,13 +1,19 @@
-import { useState } from "react";
 import ic_left_arrow_gray from "../../assets/pagination/ic_left_arrow_gray.svg";
 import ic_left_arrow_gray_disabled from "../../assets/pagination/ic_left_arrow_gray_disabled.svg";
 import ic_dots from "../../assets/pagination/ic_dots.svg";
 import { twJoin } from "tailwind-merge";
 
-const PaginationBar = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 11;
+interface PaginationBarProps {
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  totalPages: number;
+}
 
+const PaginationBar = ({
+  currentPage,
+  setCurrentPage,
+  totalPages,
+}: PaginationBarProps) => {
   const getPageItems = () => {
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, index) => index + 1);

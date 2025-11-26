@@ -6,7 +6,7 @@ import Select from "./Select";
 interface NewPageDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  wikiType: "nohow" | "work";
+  wikiType: "knowhow" | "work";
 }
 
 const NewPageDialog = ({ open, setOpen, wikiType }: NewPageDialogProps) => {
@@ -69,7 +69,7 @@ const NewPageDialog = ({ open, setOpen, wikiType }: NewPageDialogProps) => {
             onClick={() => {
               navigate(`/edit/${encodeURI(title || "")}?clubId=${clubId}`, {
                 state: {
-                  isPublic: wikiType === "nohow" ? isPublic : false,
+                  isPublic: wikiType === "knowhow" ? isPublic : false,
                   wikiType,
                 },
               });
