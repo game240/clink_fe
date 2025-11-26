@@ -1,11 +1,9 @@
-import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
 import PaginationBar from "../../components/pagination/PaginationBar";
+import NewPageDialog from "../../components/club/archive/NewPageDialog";
 
 const ClubArchive = () => {
-  const [searchParams] = useSearchParams();
-  const clubId = searchParams.get("clubId");
-  void clubId;
   const nohowWikiList = [
     {
       no: 1,
@@ -41,6 +39,10 @@ const ClubArchive = () => {
 
   const workWikiList = nohowWikiList.slice(0, 3);
 
+  // 페이지 작성
+  const [openNewKnowhow, setOpenNewKnowhow] = useState(false);
+  const [openNewWork, setOpenNewWork] = useState(false);
+
   return (
     <main className="flex flex-col gap-[70px] pb-[46px] w-full h-full">
       <section className="flex flex-col gap-[40px] w-full">
@@ -51,10 +53,19 @@ const ClubArchive = () => {
               글 작성 시 운영진/전체 공개 설정이 가능합니다.
             </p>
           </div>
-          <button className="w-[140px] h-[60px] rounded-[12px] bg-primary-04 typo-title-md-b text-white">
-            글 작성
+          <button
+            className="w-[140px] h-[60px] rounded-[12px] bg-primary-04 typo-title-md-b text-white cursor-pointer"
+            onClick={() => setOpenNewKnowhow(true)}
+          >
+            글쓰기
           </button>
         </div>
+
+        <NewPageDialog
+          open={openNewKnowhow}
+          setOpen={setOpenNewKnowhow}
+          wikiType="nohow"
+        />
 
         <div className="flex flex-col gap-[26px]">
           <section className="pt-[20px] px-[20px] w-full h-[398px] rounded-[20px] border border-gray-01">
@@ -92,10 +103,19 @@ const ClubArchive = () => {
               글 작성 시 운영진만 볼 수 있습니다.
             </p>
           </div>
-          <button className="w-[140px] h-[60px] rounded-[12px] bg-primary-04 typo-title-md-b text-white">
-            글 작성
+          <button
+            className="w-[140px] h-[60px] rounded-[12px] bg-primary-04 typo-title-md-b text-white cursor-pointer"
+            onClick={() => setOpenNewWork(true)}
+          >
+            글쓰기
           </button>
         </div>
+
+        <NewPageDialog
+          open={openNewWork}
+          setOpen={setOpenNewWork}
+          wikiType="work"
+        />
 
         <div className="flex flex-col gap-[26px]">
           <section className="pt-[20px] px-[20px] w-full h-[398px] rounded-[20px] border border-gray-01">

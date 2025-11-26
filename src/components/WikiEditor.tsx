@@ -21,7 +21,7 @@ import MenuBar from "./MenuBar";
 import { useEffect, useState, useMemo } from "react";
 import axiosClient from "../apis/axiosClient";
 import FootnoteEditor from "./FootnoteEditor";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { AxiosError } from "axios";
 
 interface FootnoteItem {
@@ -40,9 +40,17 @@ interface Meta {
 }
 
 export default function WikiEditor() {
-  const { pathname } = useLocation(); // e.g. "/edit/광운대학교/광운극예술연구회"
-  const raw = pathname.replace(/^\/edit\//, ""); // "광운대학교/광운극예술연구회"
+  const location = useLocation(); // e.g. "/edit/광운대학교/광운극예술연구회"
+  const raw = location.pathname.replace(/^\/edit\//, ""); // "광운대학교/광운극예술연구회"
   const title = decodeURI(raw);
+
+  const [searchParams] = useSearchParams();
+  const clubId = searchParams.get("clubId");
+
+  const { isPublic: isPublicFromLocation, wikiType: wikiTypeFromLocation } =
+    location.state || {};
+  const [isPublic, setIsPublic] = useState(isPublicFromLocation || false);
+  const [wikiType, setWikiType] = useState(wikiTypeFromLocation || "work");
 
   const [initialContent, setInitialContent] = useState<JSONContent[] | null>(
     null
@@ -104,10 +112,13 @@ export default function WikiEditor() {
       try {
         const encodedTitle = encodeURI(title);
 
-        const { data } = await axiosClient.get(`/page?title=${encodedTitle}`);
+        const { data } = await axiosClient.get(
+          `/page?clubId=${clubId}&title=${encodedTitle}`
+        );
         setMeta(data.meta);
         setInitialContent(data.content);
-        console.log(data);
+        setIsPublic(data.meta.is_public);
+        setWikiType(data.meta.wiki_type);
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404) {
@@ -124,7 +135,7 @@ export default function WikiEditor() {
     };
 
     loadPage();
-  }, [title]);
+  }, [clubId, title]);
 
   // Set content when fetched
   useEffect(() => {
@@ -184,8 +195,11 @@ export default function WikiEditor() {
     try {
       const content = mainEditor.getJSON();
       await axiosClient.post("/page", {
+        clubId,
         title,
         content,
+        isPublic,
+        wikiType,
         // summary: '본문 편집',
       });
       setMessage(`✅ 저장 성공: ${title}`);
@@ -200,10 +214,37 @@ export default function WikiEditor() {
   return (
     <div>
       <div className="flex items-end gap-[12px] mb-[49px]">
-        <h1 className="font-36-700">{title}</h1>
-        <p className="font-28-700">
-          {meta && `(v${meta.current_rev_number + 1})`}
-        </p>
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center gap-[12px]">
+            <h1 className="font-36-700">{title}</h1>
+            <p className="font-28-700">
+              {meta && `(v${meta.current_rev_number + 1})`}
+            </p>
+          </div>
+
+          {wikiType === "nohow" && (
+            <div className="flex gap-[12px]">
+              <input
+                type="radio"
+                id="isPublic-true"
+                name="isPublic"
+                value="true"
+                checked={isPublic}
+                onChange={() => setIsPublic(true)}
+              />
+              <label htmlFor="isPublic-true">전체 공개</label>
+              <input
+                type="radio"
+                id="isPublic-false"
+                name="isPublic"
+                value="false"
+                checked={!isPublic}
+                onChange={() => setIsPublic(false)}
+              />
+              <label htmlFor="isPublic-false">운영진 공개</label>
+            </div>
+          )}
+        </div>
       </div>
       <MenuBar
         editor={activeEditor}

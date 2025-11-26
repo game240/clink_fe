@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import ic_more from "../../assets/landing/ic_more.svg";
 import ic_location from "../../assets/landing/ic_location.svg";
 import ic_member from "../../assets/landing/ic_member.svg";
@@ -5,6 +6,7 @@ import ic_dot from "../../assets/landing/ic_dot.svg";
 import speech_bubble from "../../assets/landing/speech_bubble.svg";
 
 interface ClubListItemProps {
+  id: string;
   name: string;
   location: string;
   members: number;
@@ -13,14 +15,21 @@ interface ClubListItemProps {
 }
 
 const ClubListItem = ({
+  id,
   name,
   location,
   members,
   description,
   thumbnailUrl,
 }: ClubListItemProps) => {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-[20px] w-[340px]">
+    <div
+      className="flex flex-col gap-[20px] w-[340px] cursor-pointer"
+      onClick={() => {
+        navigate(`/club/archive?clubId=${id}`);
+      }}
+    >
       <div
         className="w-full aspect-square rounded-[20px] border border-gray-01 bg-contain bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${thumbnailUrl})` }}

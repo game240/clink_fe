@@ -17,6 +17,7 @@ const MyClubsList = ({ children, clubList }: MyClubsListProps) => {
           {clubList.map((club) => (
             <ClubListItem
               key={club.id}
+              id={club.id}
               name={club.name}
               location={club.location}
               members={club.members}

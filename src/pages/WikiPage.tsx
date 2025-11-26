@@ -28,6 +28,8 @@ interface WikiDoc {
         name: string;
       }
     ];
+    is_public: boolean;
+    is_knowhow: boolean;
   };
   content: {
     type: "doc";
@@ -36,14 +38,18 @@ interface WikiDoc {
 }
 
 const WikiPage = () => {
-  const { pathname } = useLocation(); // ex: "/page/수도권/동북권/광운대학교"
-  const raw = pathname.replace(/^\/page\//, ""); // "수도권/동북권/광운대학교"
+  const location = useLocation(); // ex: "/page/수도권/동북권/광운대학교"
+  const raw = location.pathname.replace(/^\/page\//, ""); // "수도권/동북권/광운대학교"
   const title = decodeURI(raw); // 디코딩
 
-  // query param: ?revision_id=[uuid]&show_diff=true
+  // query param: ?clubId=[uuid]&revision_id=[uuid]&show_diff=true
   const [searchParams] = useSearchParams();
+  const clubId = searchParams.get("clubId");
   const revision_id = searchParams.get("revision_id");
   const showDiff = searchParams.get("show_diff") === "true" || false;
+
+  const { isPublic, wikiType: wikiTypeFromLocation } = location.state || {};
+  const [wikiType, setWikiType] = useState(wikiTypeFromLocation || "work");
 
   const navigate = useNavigate();
 
@@ -61,9 +67,11 @@ const WikiPage = () => {
 
   const fetchRecentPage = useCallback(async () => {
     const encoded = encodeURI(title || "");
-    const { data } = await axiosClient.get(`/page?title=${encoded}`);
+    const { data } = await axiosClient.get(
+      `/page?title=${encoded}&clubId=${clubId}`
+    );
     return data as WikiDoc;
-  }, [title]);
+  }, [clubId, title]);
 
   const fetchRevision = useCallback(async () => {
     const { data } = await axiosClient.get(`/revision/${revision_id}`, {
@@ -198,6 +206,7 @@ const WikiPage = () => {
           const current = await fetchRecentPage();
           setDoc(current);
           setCurrentDoc(current);
+          setWikiType(current.meta.is_knowhow === true ? "knowhow" : "work");
         }
         setExists(true);
       } catch (error) {
@@ -234,7 +243,14 @@ const WikiPage = () => {
           <button
             className="w-[74px] h-[36px] font-15-400 rounded-[6px] border-1 border-[#CCC] bg-white cursor-pointer"
             // 편집 버튼도 제목을 넘겨서 이동
-            onClick={() => navigate(`/edit/${encodeURI(title || "")}`)}
+            onClick={() =>
+              navigate(`/edit/${encodeURI(title || "")}?clubId=${clubId}`, {
+                state: {
+                  isPublic,
+                  wikiType: wikiTypeFromLocation,
+                },
+              })
+            }
           >
             편집
           </button>
@@ -348,7 +364,7 @@ const WikiPage = () => {
           <section className="flex flex-col gap-[17px] mb-[14.4px]">
             <div className="flex items-center pl-[8px] w-full h-[23px] rounded-[6px] border-1 border-[#CCC] font-14-400">
               분류:&nbsp;
-              {doc?.meta?.categories?.map((category, i) => (
+              {/* {doc?.meta?.categories?.map((category, i) => (
                 <span
                   key={category.name}
                   className="text-[var(--blue)] font-14-400"
@@ -359,7 +375,14 @@ const WikiPage = () => {
                 >
                   {category.name}
                 </span>
-              ))}
+              ))} */}
+              <span className="font-14-400">
+                {wikiType === "knowhow"
+                  ? "노하우 위키"
+                  : wikiType === "work"
+                  ? "업무별 위키"
+                  : ""}
+              </span>
             </div>
           </section>
 
@@ -375,7 +398,9 @@ const WikiPage = () => {
           <p>"{title}" 페이지가 존재하지 않습니다.</p>
           <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
-            onClick={() => navigate(`/edit/${encodeURI(title || "")}`)}
+            onClick={() =>
+              navigate(`/edit/${encodeURI(title || "")}?clubId=${clubId}`)
+            }
           >
             새 문서 생성
           </button>
