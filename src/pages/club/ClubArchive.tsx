@@ -186,7 +186,14 @@ const ClubArchive = () => {
                   <p className="typo-text-lg-r text-gray-09">
                     {workTotal - ((currentWorkPage - 1) * pageSize + index)}
                   </p>
-                  <p className="typo-text-lg-r text-gray-09">{item.title}</p>
+                  <Link
+                    className="typo-text-lg-r text-gray-09 cursor-pointer hover:underline"
+                    to={`/page/${item.title}?clubId=${clubId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.title}
+                  </Link>
                   <p className="typo-text-lg-r text-gray-09">
                     {format(parseISO(item.created_at), "yyyy-MM-dd")}
                   </p>
