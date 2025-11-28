@@ -8,6 +8,7 @@ interface RecentChangedPage {
   page_id: string;
   title: string;
   updated_at: string;
+  is_knowhow: boolean;
 }
 
 const RightPageBlockContent = () => {
@@ -56,7 +57,11 @@ const RightPageBlockContent = () => {
             <li
               className="font-15-400 break-words text-[var(--blue)] cursor-pointer hover:text-[#0263b8] hover:underline line-clamp-1"
               onClick={() =>
-                navigate(`/page/${encodeURI(page.title)}?clubId=${clubId}`)
+                navigate(
+                  `/page/${encodeURI(page.title)}?clubId=${clubId}&wikiType=${
+                    page.is_knowhow ? "knowhow" : "work"
+                  }`
+                )
               }
             >
               {page.title}

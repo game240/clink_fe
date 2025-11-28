@@ -125,7 +125,7 @@ const ClubArchive = () => {
                   </p>
                   <Link
                     className="typo-text-lg-r text-gray-09 cursor-pointer hover:underline"
-                    to={`/page/${item.title}?clubId=${clubId}`}
+                    to={`/page/${item.title}?clubId=${clubId}&wikiType=knowhow`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -188,7 +188,7 @@ const ClubArchive = () => {
                   </p>
                   <Link
                     className="typo-text-lg-r text-gray-09 cursor-pointer hover:underline"
-                    to={`/page/${item.title}?clubId=${clubId}`}
+                    to={`/page/${item.title}?clubId=${clubId}&wikiType=work`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

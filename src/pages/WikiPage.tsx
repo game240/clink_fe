@@ -45,11 +45,14 @@ const WikiPage = () => {
   // query param: ?clubId=[uuid]&revision_id=[uuid]&show_diff=true
   const [searchParams] = useSearchParams();
   const clubId = searchParams.get("clubId");
+  const wikiTypeFromQuery = searchParams.get("wikiType");
   const revision_id = searchParams.get("revision_id");
   const showDiff = searchParams.get("show_diff") === "true" || false;
 
-  const { isPublic, wikiType: wikiTypeFromLocation } = location.state || {};
-  const [wikiType, setWikiType] = useState(wikiTypeFromLocation || "work");
+  // const { isPublic } = location.state || {};
+  const [wikiType, setWikiType] = useState(wikiTypeFromQuery || "work");
+  // eslint 지우기용
+  console.log(wikiType);
 
   const navigate = useNavigate();
 
@@ -239,22 +242,26 @@ const WikiPage = () => {
         <h1 className="font-36-700">
           {title} {revision_id && doc && `(v${doc?.meta?.current_rev_number})`}
         </h1>
-        {exists && (
+        {/* {exists && (
           <button
             className="w-[74px] h-[36px] font-15-400 rounded-[6px] border-1 border-[#CCC] bg-white cursor-pointer"
             // 편집 버튼도 제목을 넘겨서 이동
             onClick={() =>
-              navigate(`/edit/${encodeURI(title || "")}?clubId=${clubId}`, {
-                state: {
-                  isPublic,
-                  wikiType: wikiTypeFromLocation,
-                },
-              })
+              navigate(
+                `/edit/${encodeURI(
+                  title || ""
+                )}?clubId=${clubId}&wikiType=${wikiType}`,
+                {
+                  state: {
+                    isPublic,
+                  },
+                }
+              )
             }
           >
             편집
           </button>
-        )}
+        )} */}
       </div>
 
       {exists ? (
@@ -361,21 +368,9 @@ const WikiPage = () => {
               </div>
             </section>
           )}
-          <section className="flex flex-col gap-[17px] mb-[14.4px]">
+          {/* <section className="flex flex-col gap-[17px] mb-[14.4px]">
             <div className="flex items-center pl-[8px] w-full h-[23px] rounded-[6px] border-1 border-[#CCC] font-14-400">
               분류:&nbsp;
-              {/* {doc?.meta?.categories?.map((category, i) => (
-                <span
-                  key={category.name}
-                  className="text-[var(--blue)] font-14-400"
-                  style={{
-                    marginRight:
-                      i < (doc?.meta?.categories?.length ?? 0) - 1 ? 8 : 0,
-                  }}
-                >
-                  {category.name}
-                </span>
-              ))} */}
               <span className="font-14-400">
                 {wikiType === "knowhow"
                   ? "노하우 위키"
@@ -384,7 +379,7 @@ const WikiPage = () => {
                   : ""}
               </span>
             </div>
-          </section>
+          </section> */}
 
           <ParentLink />
 

@@ -67,12 +67,16 @@ const NewPageDialog = ({ open, setOpen, wikiType }: NewPageDialogProps) => {
           <button
             className="w-[136px] h-[56px] bg-primary-04 rounded-[12px] typo-title-md-b text-white cursor-pointer disabled:bg-primary-03 disabled:cursor-default"
             onClick={() => {
-              navigate(`/edit/${encodeURI(title || "")}?clubId=${clubId}`, {
-                state: {
-                  isPublic: wikiType === "knowhow" ? isPublic : false,
-                  wikiType,
-                },
-              });
+              navigate(
+                `/edit/${encodeURI(
+                  title || ""
+                )}?clubId=${clubId}&wikiType=${wikiType}`,
+                {
+                  state: {
+                    isPublic: wikiType === "knowhow" ? isPublic : false,
+                  },
+                }
+              );
             }}
             disabled={!title}
           >

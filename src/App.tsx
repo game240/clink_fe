@@ -1,6 +1,12 @@
 import "./App.css";
 import WikiEditor from "./components/WikiEditor";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import "./styles/colors.css";
 import "./styles/texts.css";
 import SignupForm from "./components/auth/SignupForm";
@@ -20,6 +26,7 @@ import DefaultLayoutV2 from "./layouts/DefaultLayoutV2";
 import AsideLayout from "./layouts/AsideLayout";
 import MyClubs from "./pages/MyClubs";
 import ClubArchive from "./pages/club/ClubArchive";
+import PageLayoutV2 from "./layouts/PageLayoutV2";
 
 const router = createBrowserRouter([
   {
@@ -76,10 +83,6 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "page/*",
-            element: <WikiPage />,
-          },
-          {
             path: "search",
             element: <WikiSearch />,
           },
@@ -98,6 +101,53 @@ const router = createBrowserRouter([
           {
             path: "auth/callback",
             element: <AuthCallback />,
+          },
+        ],
+      },
+      {
+        element: (
+          <PageLayoutV2
+            TopItem={() => {
+              const [searchParams] = useSearchParams();
+              const navigate = useNavigate();
+              const location = useLocation();
+              const raw = location.pathname.replace(/^\/page\//, "");
+              const title = decodeURI(raw);
+              const clubId = searchParams.get("clubId");
+              const wikiType = searchParams.get("wikiType") || "";
+              const isPublic = location.state?.isPublic;
+
+              return (
+                <section className="flex justify-between items-end mt-[-24px] mb-[30px]">
+                  <h1 className="typo-head-md-b text-gray-09">
+                    {wikiType === "knowhow" ? "노하우" : "업무별"} 위키
+                  </h1>
+                  <button
+                    className="w-[117px] h-[60px] bg-primary-04 rounded-[12px] typo-title-md-b text-white cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/edit/${encodeURI(
+                          title || ""
+                        )}?clubId=${clubId}&wikiType=${wikiType}`,
+                        {
+                          state: {
+                            isPublic,
+                          },
+                        }
+                      )
+                    }
+                  >
+                    편집
+                  </button>
+                </section>
+              );
+            }}
+          />
+        ),
+        children: [
+          {
+            path: "page/*",
+            element: <WikiPage />,
           },
         ],
       },

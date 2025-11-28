@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 const DefaultLayout = () => {
   return (
-    <main className="w-screen min-h-screen mx-auto bg-[#F5F5F5]">
+    <main className="w-screen min-h-screen mx-auto bg-card">
       <NavBar />
       <ScrollToTop />
       <Outlet />

@@ -46,11 +46,11 @@ export default function WikiEditor() {
 
   const [searchParams] = useSearchParams();
   const clubId = searchParams.get("clubId");
+  const wikiTypeFromQuery = searchParams.get("wikiType");
 
-  const { isPublic: isPublicFromLocation, wikiType: wikiTypeFromLocation } =
-    location.state || {};
+  const { isPublic: isPublicFromLocation } = location.state || {};
   const [isPublic, setIsPublic] = useState(isPublicFromLocation || false);
-  const [wikiType, setWikiType] = useState(wikiTypeFromLocation || "work");
+  const [wikiType, setWikiType] = useState(wikiTypeFromQuery || "work");
 
   const [initialContent, setInitialContent] = useState<JSONContent[] | null>(
     null
@@ -118,7 +118,7 @@ export default function WikiEditor() {
         setMeta(data.meta);
         setInitialContent(data.content);
         setIsPublic(data.meta.is_public);
-        setWikiType(data.meta.wiki_type);
+        setWikiType(data.meta.is_knowhow === true ? "knowhow" : "work");
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404) {
@@ -222,7 +222,7 @@ export default function WikiEditor() {
             </p>
           </div>
 
-          {wikiType === "nohow" && (
+          {wikiType === "knowhow" && (
             <div className="flex gap-[12px]">
               <input
                 type="radio"

@@ -7,7 +7,7 @@ const PageBlock = ({
   return (
     <main
       className={clsx(
-        "rounded-[6px] border-1 border-[#CCC] bg-white",
+        "rounded-[20px] border-1 border-gray-01 bg-white",
         className
       )}
       {...props}
