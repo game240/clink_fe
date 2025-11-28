@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../apis/axiosClient";
 import { timeAgo } from "../utils/timeAgo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export interface Revision {
   revision_id: string;
   page_id: string;
   title: string;
+  is_knowhow: boolean;
   modifier: string;
   edited_at: string;
   rev_number: number;
@@ -33,13 +34,17 @@ const RecentChange = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const clubId = searchParams.get("clubId");
+
   useEffect(() => {
     fetchPage(page);
-  }, [page]);
+  }, [page, searchParams]);
 
   const fetchPage = async (pageNum: number) => {
     const { data } = await axiosClient.get("/recent-change", {
       params: {
+        clubId,
         limit: PAGE_SIZE,
         offset: (pageNum - 1) * PAGE_SIZE, // 레코드 오프셋
       },
@@ -91,7 +96,13 @@ const RecentChange = () => {
             <div className="flex items-center gap-2">
               <span
                 className="font-15-400 break-words text-[var(--blue)] cursor-pointer hover:text-[#0263b8] hover:underline"
-                onClick={() => navigate(`/page/${encodeURI(item.title)}`)}
+                onClick={() =>
+                  navigate(
+                    `/page/${encodeURI(item.title)}?clubId=${clubId}&wikiType=${
+                      item.is_knowhow ? "knowhow" : "work"
+                    }`
+                  )
+                }
               >
                 {item.title}
               </span>
@@ -109,9 +120,9 @@ const RecentChange = () => {
                 className="cursor-pointer"
                 onClick={() => {
                   navigate(
-                    `/page/${encodeURI(item.title)}?revision_id=${
-                      item.revision_id
-                    }&show_diff=true`
+                    `/page/${encodeURI(item.title)}?clubId=${clubId}&wikiType=${
+                      item.is_knowhow ? "knowhow" : "work"
+                    }&revision_id=${item.revision_id}&show_diff=true`
                   );
                 }}
               >
@@ -121,9 +132,9 @@ const RecentChange = () => {
                 className="cursor-pointer"
                 onClick={() => {
                   navigate(
-                    `/page/${encodeURI(item.title)}?revision_id=${
-                      item.revision_id
-                    }`
+                    `/page/${encodeURI(item.title)}?clubId=${clubId}&wikiType=${
+                      item.is_knowhow ? "knowhow" : "work"
+                    }&revision_id=${item.revision_id}`
                   );
                 }}
               >

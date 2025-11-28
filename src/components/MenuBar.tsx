@@ -114,7 +114,7 @@ const MenuBar = ({
   };
 
   return (
-    <div className="flex items-center justify-end gap-2 mb-2">
+    <div className="flex items-center justify-end gap-[28px] mb-2 typo-text-md-b">
       <button
         className="cursor-pointer"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -175,7 +175,7 @@ const MenuBar = ({
         위키 링크
       </button>
       <button
-        className="cursor-pointer disabled:text-[#CCC] disabled:cursor-default"
+        className="text-primary-04 cursor-pointer disabled:text-[#CCC] disabled:cursor-default"
         onClick={insertParagraph}
         disabled={isFootnote}
       >
