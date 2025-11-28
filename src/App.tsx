@@ -75,14 +75,6 @@ const router = createBrowserRouter([
             element: <Organizations />,
           },
           {
-            path: "edit/*",
-            element: (
-              <ProtectedRoute>
-                <WikiEditor />
-              </ProtectedRoute>
-            ),
-          },
-          {
             path: "search",
             element: <WikiSearch />,
           },
@@ -150,6 +142,14 @@ const router = createBrowserRouter([
             element: <WikiPage />,
           },
         ],
+      },
+      {
+        path: "edit/*",
+        element: (
+          <ProtectedRoute>
+            <WikiEditor />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

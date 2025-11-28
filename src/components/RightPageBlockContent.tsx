@@ -28,15 +28,15 @@ const RightPageBlockContent = () => {
           clubId,
         },
       });
-      setRecentChangedPages(data.items);
+      setRecentChangedPages(data.items.slice(0, 3));
     };
     fetchRecentChange();
   }, [location.pathname, clubId]);
 
   return (
     <section className="w-full h-full">
-      <div className="flex justify-between items-center mb-[22px] w-full">
-        <p className="font-18-600">최근 변경</p>
+      <div className="flex justify-between items-center px-[15px] w-full h-[58px] bg-card-2 rounded-[12px]">
+        <p className="typo-text-lg-b">최근 변경</p>
         <button
           className="cursor-pointer"
           onClick={() => navigate(`/recent-change?clubId=${clubId}`)}
@@ -48,28 +48,33 @@ const RightPageBlockContent = () => {
           />
         </button>
       </div>
-      <ul className="flex flex-col gap-[8px]">
-        {recentChangedPages.map((page) => (
-          <div
-            key={page.page_id}
-            className="flex justify-between items-center w-full"
-          >
-            <li
-              className="font-15-400 break-words text-[var(--blue)] cursor-pointer hover:text-[#0263b8] hover:underline line-clamp-1"
-              onClick={() =>
-                navigate(
-                  `/page/${encodeURI(page.title)}?clubId=${clubId}&wikiType=${
-                    page.is_knowhow ? "knowhow" : "work"
-                  }`
-                )
-              }
+      <ul className="flex flex-col">
+        {recentChangedPages.map((page, index) => (
+          <>
+            <div
+              key={page.page_id}
+              className="flex justify-between items-center w-full"
             >
-              {page.title}
-            </li>
-            <p className="font-12-400 whitespace-nowrap">
-              {timeAgo(page.updated_at)}
-            </p>
-          </div>
+              <li
+                className="py-[20px] typo-text-lg-m break-words text-primary-04 cursor-pointer hover:text-(--blue) hover:underline line-clamp-1"
+                onClick={() =>
+                  navigate(
+                    `/page/${encodeURI(page.title)}?clubId=${clubId}&wikiType=${
+                      page.is_knowhow ? "knowhow" : "work"
+                    }`
+                  )
+                }
+              >
+                {page.title}
+              </li>
+              <p className="typo-text-lg-r whitespace-nowrap">
+                {timeAgo(page.updated_at)}
+              </p>
+            </div>
+            {index < recentChangedPages.length - 1 && (
+              <div className="w-full h-[1px] bg-gray-00" />
+            )}
+          </>
         ))}
       </ul>
     </section>

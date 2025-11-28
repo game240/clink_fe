@@ -19,7 +19,7 @@ const PageLayoutV2 = ({ TopItem }: PageLayoutV2Props) => {
         <PageBlock className="flex-1 mb-[200px] min-h-[984px] p-[30px]">
           <Outlet />
         </PageBlock>
-        <PageBlock className="w-[340px] h-[350px] p-[20px]">
+        <PageBlock className="w-[340px] h-[274px] p-[20px]">
           <RightPageBlockContent />
         </PageBlock>
       </main>

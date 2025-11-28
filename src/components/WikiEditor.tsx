@@ -23,6 +23,9 @@ import axiosClient from "../apis/axiosClient";
 import FootnoteEditor from "./FootnoteEditor";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { AxiosError } from "axios";
+import AsideLayoutTopNav from "./aside/AsideLayoutTopNav";
+import PageBlock from "./PageBlock";
+import RightPageBlockContent from "./RightPageBlockContent";
 
 interface FootnoteItem {
   id: string;
@@ -212,82 +215,136 @@ export default function WikiEditor() {
   };
 
   return (
-    <div>
-      <div className="flex items-end gap-[12px] mb-[49px]">
-        <div className="flex justify-between items-center w-full">
-          <div className="flex items-center gap-[12px]">
-            <h1 className="font-36-700">{title}</h1>
-            <p className="font-28-700">
-              {meta && `(v${meta.current_rev_number + 1})`}
-            </p>
+    // PageLayoutV2 그대로
+    <section className="mx-auto w-[75.833333333333333333333333333333%]">
+      <div className="px-[10px]">
+        <AsideLayoutTopNav />
+        {/* TopItem */}
+        <section className="flex justify-between items-end mt-[-24px] mb-[30px]">
+          <h1 className="typo-head-md-b text-gray-09">위키 글쓰기</h1>
+          <div className="flex gap-[20px]">
+            {meta?.current_rev_number !== 0 && (
+              <button className="w-[117px] h-[60px] bg-error rounded-[12px] typo-title-md-b text-white">
+                삭제
+              </button>
+            )}
+            <button
+              className="w-[117px] h-[60px] bg-primary-04 rounded-[12px] typo-title-md-b text-white cursor-pointer"
+              onClick={handleSave}
+            >
+              저장
+            </button>
           </div>
-
-          {wikiType === "knowhow" && (
-            <div className="flex gap-[12px]">
-              <input
-                type="radio"
-                id="isPublic-true"
-                name="isPublic"
-                value="true"
-                checked={isPublic}
-                onChange={() => setIsPublic(true)}
-              />
-              <label htmlFor="isPublic-true">전체 공개</label>
-              <input
-                type="radio"
-                id="isPublic-false"
-                name="isPublic"
-                value="false"
-                checked={!isPublic}
-                onChange={() => setIsPublic(false)}
-              />
-              <label htmlFor="isPublic-false">운영진 공개</label>
+        </section>
+      </div>
+      <main className="flex justify-center gap-[20px]">
+        <PageBlock className="flex-1 mb-[200px] min-h-[984px] p-[20px]">
+          <div>
+            <div className="flex items-end gap-[12px] mb-[20px]">
+              <div className="flex justify-between items-center w-full">
+                <div className="flex items-center gap-[12px] py-[18px] px-[20px] w-full bg-card-2 rounded-[12px]">
+                  <h1 className="typo-text-lg-b">{title}</h1>
+                  <p className="typo-text-md-b">
+                    {meta && `(v${meta.current_rev_number + 1})`}
+                  </p>
+                </div>
+              </div>
             </div>
+            <MenuBar
+              editor={activeEditor}
+              isFootnote={activeEditor !== null && activeEditor !== mainEditor}
+            />
+            <div className="editor-wrapper pl-4">
+              {mainEditor && <EditorContent editor={mainEditor} />}
+            </div>
+            <div className="footnotes-list">
+              <hr />
+              <h4>각주</h4>
+              <ol className="flex flex-col gap-2">
+                {footnotes.map((fn, index) => (
+                  <li key={fn.id} className="flex items-center gap-2">
+                    <span className="text-[#0275D8]">[{index + 1}]</span>
+                    <FootnoteEditor
+                      id={fn.id}
+                      content={fn.content}
+                      updateFootnoteContent={updateFootnoteContent}
+                      setActiveEditor={setActiveEditor}
+                    />
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div style={{ marginTop: "1rem" }}>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className={saving ? "btn-disabled" : "btn-primary"}
+              >
+                {saving ? "저장 중..." : "페이지 저장"}
+              </button>
+            </div>
+            {message && (
+              <p
+                className={
+                  message.startsWith("✅") ? "text-green-600" : "text-red-600"
+                }
+              >
+                {message}
+              </p>
+            )}
+          </div>
+        </PageBlock>
+        <div className="flex flex-col gap-[30px]">
+          {wikiType === "knowhow" && (
+            <PageBlock className="w-[340px] h-[150px] p-[20px]">
+              <section className="w-full h-full">
+                <div className="flex justify-between items-center px-[15px] w-full h-[58px] bg-card-2 rounded-[12px]">
+                  <p className="typo-text-lg-b">공개 설정</p>
+                </div>
+                <div className="flex gap-[40px] pl-[15px] pt-[27px]">
+                  <div className="flex gap-[10px]">
+                    <input
+                      type="radio"
+                      className="cursor-pointer"
+                      id="isPublic-true"
+                      name="isPublic"
+                      value="true"
+                      checked={isPublic}
+                      onChange={() => setIsPublic(true)}
+                    />
+                    <label
+                      htmlFor="isPublic-true"
+                      className="typo-text-lg-m cursor-pointer"
+                    >
+                      전체 공개
+                    </label>
+                  </div>
+                  <div className="flex gap-[10px]">
+                    <input
+                      type="radio"
+                      className="cursor-pointer"
+                      id="isPublic-false"
+                      name="isPublic"
+                      value="false"
+                      checked={!isPublic}
+                      onChange={() => setIsPublic(false)}
+                    />
+                    <label
+                      htmlFor="isPublic-false"
+                      className="typo-text-lg-m cursor-pointer"
+                    >
+                      운영진 공개
+                    </label>
+                  </div>
+                </div>
+              </section>
+            </PageBlock>
           )}
+          <PageBlock className="w-[340px] h-[274px] p-[20px]">
+            <RightPageBlockContent />
+          </PageBlock>
         </div>
-      </div>
-      <MenuBar
-        editor={activeEditor}
-        isFootnote={activeEditor !== null && activeEditor !== mainEditor}
-      />
-      <div className="editor-wrapper pl-4">
-        {mainEditor && <EditorContent editor={mainEditor} />}
-      </div>
-      <div className="footnotes-list">
-        <hr />
-        <h4>각주</h4>
-        <ol className="flex flex-col gap-2">
-          {footnotes.map((fn, index) => (
-            <li key={fn.id} className="flex items-center gap-2">
-              <span className="text-[#0275D8]">[{index + 1}]</span>
-              <FootnoteEditor
-                id={fn.id}
-                content={fn.content}
-                updateFootnoteContent={updateFootnoteContent}
-                setActiveEditor={setActiveEditor}
-              />
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div style={{ marginTop: "1rem" }}>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className={saving ? "btn-disabled" : "btn-primary"}
-        >
-          {saving ? "저장 중..." : "페이지 저장"}
-        </button>
-      </div>
-      {message && (
-        <p
-          className={
-            message.startsWith("✅") ? "text-green-600" : "text-red-600"
-          }
-        >
-          {message}
-        </p>
-      )}
-    </div>
+      </main>
+    </section>
   );
 }

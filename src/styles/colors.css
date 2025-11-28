@@ -46,6 +46,9 @@
   /* Background */
   --color-card: #f0f1f7;
   --color-card-2: #f5f6f8;
+  --color-card-3: #fdfdfd;
+
+  --color-error: #ff383c;
 
   /* Aliases */
   --color-primary-01: var(--color-blue-01);
