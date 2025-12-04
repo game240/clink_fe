@@ -5,6 +5,8 @@ import { supabase } from "../../libs/supabaseClient";
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ export default function SignupForm() {
 
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert([{ id: data.user?.id, nickname: email }]);
+        .insert([{ id: data.user?.id, email: email, nickname: email, name: name, phone: phone }]);
       if (profileError) {
         console.error("profiles insert error", profileError);
       }
@@ -51,6 +53,20 @@ export default function SignupForm() {
         placeholder="비밀번호"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <input
+        type="text"
+        placeholder="이름"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
+      <input
+        type="text"
+        placeholder="전화번호, 010-1234-5678"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
         required
       />
       <button type="submit" disabled={loading}>
