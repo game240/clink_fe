@@ -25,7 +25,7 @@ jobs:
         run: npm run build   # Vite/CRA 모두 보통 여기
 
       - name: Deploy dist via rsync
-        uses: burnett01/rsync-deployments@v7.1.1
+        uses: burnett01/rsync-deployments@v7.1.0
         with:
           switches: -avzr --delete
           path: dist/                     # CRA면 build/, Vite면 dist/ (필요시 수정)
