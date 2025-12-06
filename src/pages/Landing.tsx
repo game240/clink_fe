@@ -18,7 +18,6 @@ const Landing = () => {
     try {
       const fetchData = async () => {
         const { data } = await axiosClient.get("/club");
-        console.log(data);
         setCLubList(data);
       };
       fetchData();
@@ -29,21 +28,13 @@ const Landing = () => {
 
   return (
     <main className="flex flex-col gap-[70px] pb-[100px]">
-      <video
-        src={landingVideo}
-        autoPlay
-        loop
-        muted
-        className="w-full h-[720px] object-cover"
-      />
+      <video src={landingVideo} autoPlay loop muted className="w-full h-[720px] object-cover" />
 
       <section className="flex flex-col gap-[70px] px-[12.083333333333333333333333333333%]">
         <MyClubsList clubList={clubList}>나의 동아리 바로가기</MyClubsList>
 
         <section className="flex flex-col gap-[50px]">
-          <h1 className="text-head-lg-b text-gray-08">
-            동아리 활동을 시작하는 두 가지 방법
-          </h1>
+          <h1 className="text-head-lg-b text-gray-08">동아리 활동을 시작하는 두 가지 방법</h1>
           <div className="flex justify-between">
             <ClubStartBlock
               className="bg-primary-02"
