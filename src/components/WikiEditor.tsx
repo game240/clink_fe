@@ -54,6 +54,7 @@ export default function WikiEditor() {
   const { isPublic: isPublicFromLocation } = location.state || {};
   const [isPublic, setIsPublic] = useState(isPublicFromLocation || false);
   const [wikiType, setWikiType] = useState(wikiTypeFromQuery || "work");
+  const [clubName, setClubName] = useState<string>("");
 
   const [initialContent, setInitialContent] = useState<JSONContent[] | null>(
     null
@@ -107,6 +108,19 @@ export default function WikiEditor() {
   //     setInitialContent(data.content);
   //   });
   // }, []);
+
+  useEffect(() => {
+    const fetchClubInfo = async () => {
+      if (!clubId) return;
+      try {
+        const { data } = await axiosClient.get(`/club/info?clubId=${clubId}`);
+        setClubName(data.name);
+      } catch (error) {
+        console.error("동아리 정보 로드 실패:", error);
+      }
+    };
+    fetchClubInfo();
+  }, [clubId]);
 
   useEffect(() => {
     if (!title) return;
@@ -218,7 +232,7 @@ export default function WikiEditor() {
     // PageLayoutV2 그대로
     <section className="mx-auto w-[75.833333333333333333333333333333%]">
       <div className="px-[10px]">
-        <AsideLayoutTopNav />
+        <AsideLayoutTopNav clubName={clubName} />
         {/* TopItem */}
         <section className="flex justify-between items-end mt-[-24px] mb-[30px]">
           <h1 className="typo-head-md-b text-gray-09">위키 글쓰기</h1>
