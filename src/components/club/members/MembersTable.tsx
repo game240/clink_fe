@@ -7,6 +7,7 @@ interface MembersTableProps {
   title: string;
   members: Member[];
   setMembers: Dispatch<SetStateAction<Member[]>>;
+  officerPositionsOptions: string[];
   onChangePositionsOptions: (members: Member[], id: string, newPosition: string) => Member[];
   onChangeGraduationOptions: (
     members: Member[],
@@ -19,10 +20,11 @@ const MembersTable = ({
   title,
   members,
   setMembers,
+  officerPositionsOptions,
   onChangePositionsOptions,
   onChangeGraduationOptions,
 }: MembersTableProps) => {
-  const positionOptions = ["홍보부", "시설관리부", "회계부", "일반"];
+  const positionOptions = [...officerPositionsOptions, "일반"];
   const graduationOptions = ["재학", "졸업"];
 
   const handleDelete = (id: string) => {

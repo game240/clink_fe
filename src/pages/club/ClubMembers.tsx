@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import MembersTable from "../../components/club/members/MembersTable";
 import MembersInput from "../../components/club/members/MembersInput";
 import MembersInviteDialog from "../../components/club/members/MembersInviteDialog";
@@ -19,98 +19,38 @@ export interface Member {
 
 const ClubMembers = () => {
   const [searchParams] = useSearchParams();
-  const clubId = searchParams.get("clubId");
+  const clubId = searchParams.get("clubId") || "";
 
-  const [officers, setOfficers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "홍승리",
-      position: "회장",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "jdfkl12348@naver.com",
-      isMe: true,
-      isPresident: true,
-    },
-    {
-      id: "2",
-      name: "최준혁",
-      position: "홍보부",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "jdfkl12348@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-    {
-      id: "3",
-      name: "홍승민",
-      position: "홍보부",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "hongseung@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-    {
-      id: "4",
-      name: "김민지",
-      position: "시설관리부",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "hongseungli@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-    {
-      id: "5",
-      name: "박은지",
-      position: "회계부",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "hongdsfafkjkls4@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-  ]);
+  const [officers, setOfficers] = useState<Member[]>([]);
+  const [generalMembers, setGeneralMembers] = useState<Member[]>([]);
+  const [graduatedMembers, setGraduatedMembers] = useState<Member[]>([]);
 
-  const [generalMembers, setGeneralMembers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "홍승리",
-      position: "일반",
-      graduationStatus: "재학",
-      phone: "010-1234-5678",
-      email: "jdfkl12348@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-  ]);
+  const [officerPositionsOptions, setOfficerPositionsOptions] = useState<string[]>([]);
 
-  const [graduatedMembers, setGraduatedMembers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "홍승리",
-      position: "일반",
-      graduationStatus: "졸업",
-      phone: "010-1234-5678",
-      email: "jdfkl12348@naver.com",
-      isMe: false,
-      isPresident: false,
-    },
-  ]);
+  const fetchClubMembers = useCallback(async () => {
+    try {
+      const { data } = await axiosClient.get(`/club/members?clubId=${clubId}`);
+      setOfficers(data.officers);
+      setGeneralMembers(data.generalMembers);
+      setGraduatedMembers(data.graduatedMembers);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [clubId]);
 
   useEffect(() => {
-    const fetchClubMembers = async () => {
+    const fetchOfficerPositionsOptions = async () => {
       try {
-        const { data } = await axiosClient.get(`/club/members?clubId=${clubId}`);
-        console.log(data);
+        const { data } = await axiosClient.get(`/club/officers?clubId=${clubId}`);
+        setOfficerPositionsOptions(data);
       } catch (error) {
         console.error(error);
       }
     };
+
     fetchClubMembers();
-  }, [clubId]);
+    fetchOfficerPositionsOptions();
+  }, [clubId, fetchClubMembers]);
 
   const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false);
 
@@ -120,10 +60,109 @@ const ClubMembers = () => {
     newPosition: string;
   } | null>(null);
 
+  const updateClubMemberPositionsGraduation = async (
+    clubId: string,
+    profileId: string,
+    position: string,
+    graduationStatus: string
+  ) => {
+    try {
+      await axiosClient.patch(`/club/positions-graduation`, {
+        clubId,
+        profileId,
+        position,
+        graduationStatus,
+      });
+
+      await fetchClubMembers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 운영진/일반 멤버 변경 시 및 (운영진, 일반)/졸업 멤버 변경 시 테이블 멤버 변경
+  const onChangeInstantlyTableMembers = (
+    fromMembers: Member[],
+    toMembers: Member[],
+    fromSetState: Dispatch<SetStateAction<Member[]>>,
+    toSetState: Dispatch<SetStateAction<Member[]>>,
+    id: string,
+    newPosition: string,
+    newGraduationStatus: string
+  ) => {
+    const movedMember = fromMembers.find((member) => member.id === id);
+    if (!movedMember) return;
+
+    const updatedFromMembers = fromMembers.filter((member) => member.id !== id);
+    const updatedToMembers = toMembers.concat({
+      ...movedMember,
+      position: newPosition,
+      graduationStatus: newGraduationStatus,
+      // isMe와 isPresident는 원래 멤버 정보에서 유지
+      isMe: movedMember.isMe,
+      isPresident: movedMember.isPresident,
+    });
+    fromSetState(updatedFromMembers);
+    toSetState(updatedToMembers);
+  };
+
   const onChangePositionsOptions = (members: Member[], id: string, newPosition: string) => {
-    return members.map((member) =>
-      member.id === id ? { ...member, position: newPosition } : member
-    );
+    const currentMember = members.find((member) => member.id === id);
+    if (!currentMember) return members;
+
+    const currentGraduationStatus = currentMember.graduationStatus;
+    const isCurrentlyOfficer = officers.some((m) => m.id === id);
+    const isCurrentlyGeneral = generalMembers.some((m) => m.id === id);
+
+    // API 호출
+    updateClubMemberPositionsGraduation(clubId, id, newPosition, currentGraduationStatus);
+
+    // "일반"으로 변경하는 경우
+    if (newPosition === "일반") {
+      if (isCurrentlyOfficer) {
+        // 운영진 → 일반
+        onChangeInstantlyTableMembers(
+          officers,
+          generalMembers,
+          setOfficers,
+          setGeneralMembers,
+          id,
+          newPosition,
+          currentGraduationStatus
+        );
+      }
+      // 이미 일반이면 같은 테이블 내에서만 업데이트
+      else if (isCurrentlyGeneral) {
+        const updatedMembers = members.map((member) =>
+          member.id === id ? { ...member, position: newPosition } : member
+        );
+        return updatedMembers;
+      }
+    }
+    // 운영진 역할로 변경하는 경우
+    else {
+      if (isCurrentlyGeneral) {
+        // 일반 → 운영진
+        onChangeInstantlyTableMembers(
+          generalMembers,
+          officers,
+          setGeneralMembers,
+          setOfficers,
+          id,
+          newPosition,
+          currentGraduationStatus
+        );
+      }
+      // 이미 운영진이면 같은 테이블 내에서만 업데이트
+      else if (isCurrentlyOfficer) {
+        const updatedMembers = members.map((member) =>
+          member.id === id ? { ...member, position: newPosition } : member
+        );
+        return updatedMembers;
+      }
+    }
+
+    return members;
   };
 
   // 운영진 직급 변경 시 onChangePositionsOptions 대신 사용
@@ -142,12 +181,11 @@ const ClubMembers = () => {
   // Dialog 확인 버튼 클릭 시 실행
   const confirmOfficersPositionChange = () => {
     if (pendingPositionChange) {
-      const updatedOfficers = onChangePositionsOptions(
+      onChangePositionsOptions(
         officers,
         pendingPositionChange.id,
         pendingPositionChange.newPosition
       );
-      setOfficers(updatedOfficers);
       setPendingPositionChange(null);
       setOpenOfficersDialog(false);
     }
@@ -164,9 +202,87 @@ const ClubMembers = () => {
     id: string,
     newGraduationStatus: string
   ) => {
-    return members.map((member) =>
-      member.id === id ? { ...member, graduationStatus: newGraduationStatus } : member
-    );
+    const currentMember = members.find((member) => member.id === id);
+    if (!currentMember) return members;
+
+    const currentPosition = currentMember.position;
+    const isCurrentlyOfficer = officers.some((m) => m.id === id);
+    const isCurrentlyGeneral = generalMembers.some((m) => m.id === id);
+    const isCurrentlyGraduated = graduatedMembers.some((m) => m.id === id);
+
+    // API 호출
+    updateClubMemberPositionsGraduation(clubId, id, currentPosition, newGraduationStatus);
+
+    // 졸업으로 변경하는 경우
+    if (newGraduationStatus === "졸업") {
+      if (isCurrentlyOfficer) {
+        // 운영진 → 졸업
+        onChangeInstantlyTableMembers(
+          officers,
+          graduatedMembers,
+          setOfficers,
+          setGraduatedMembers,
+          id,
+          currentPosition,
+          newGraduationStatus
+        );
+        // 현재 테이블에서 해당 멤버 제거
+        return members.filter((member) => member.id !== id);
+      } else if (isCurrentlyGeneral) {
+        // 일반 → 졸업
+        onChangeInstantlyTableMembers(
+          generalMembers,
+          graduatedMembers,
+          setGeneralMembers,
+          setGraduatedMembers,
+          id,
+          currentPosition,
+          newGraduationStatus
+        );
+        // 현재 테이블에서 해당 멤버 제거
+        return members.filter((member) => member.id !== id);
+      }
+    }
+    // 재학으로 변경하는 경우
+    else if (newGraduationStatus === "재학") {
+      if (isCurrentlyGraduated) {
+        // 졸업 → 재학 (직급에 따라 운영진 또는 일반으로)
+        if (currentPosition === "일반" || !officerPositionsOptions.includes(currentPosition)) {
+          // 일반 회원으로
+          onChangeInstantlyTableMembers(
+            graduatedMembers,
+            generalMembers,
+            setGraduatedMembers,
+            setGeneralMembers,
+            id,
+            currentPosition,
+            newGraduationStatus
+          );
+        } else {
+          // 운영진으로
+          onChangeInstantlyTableMembers(
+            graduatedMembers,
+            officers,
+            setGraduatedMembers,
+            setOfficers,
+            id,
+            currentPosition,
+            newGraduationStatus
+          );
+        }
+        // 현재 테이블(졸업)에서 해당 멤버 제거
+        return members.filter((member) => member.id !== id);
+      }
+      // 이미 재학이면 같은 테이블 내에서만 업데이트
+      else if (isCurrentlyOfficer || isCurrentlyGeneral) {
+        const updatedMembers = members.map((member) =>
+          member.id === id ? { ...member, graduationStatus: newGraduationStatus } : member
+        );
+        return updatedMembers;
+      }
+    }
+
+    return members;
   };
 
   return (
@@ -198,6 +314,7 @@ const ClubMembers = () => {
           title="운영진 목록"
           members={officers}
           setMembers={setOfficers}
+          officerPositionsOptions={officerPositionsOptions}
           onChangePositionsOptions={handleOfficersPositionChange}
           onChangeGraduationOptions={onChangeGraduationOptions}
         />
@@ -243,6 +360,7 @@ const ClubMembers = () => {
           title="일반 회원 목록"
           members={generalMembers}
           setMembers={setGeneralMembers}
+          officerPositionsOptions={officerPositionsOptions}
           onChangePositionsOptions={onChangePositionsOptions}
           onChangeGraduationOptions={onChangeGraduationOptions}
         />
@@ -250,6 +368,7 @@ const ClubMembers = () => {
           title="졸업 회원 목록"
           members={graduatedMembers}
           setMembers={setGraduatedMembers}
+          officerPositionsOptions={officerPositionsOptions}
           onChangePositionsOptions={onChangePositionsOptions}
           onChangeGraduationOptions={onChangeGraduationOptions}
         />
