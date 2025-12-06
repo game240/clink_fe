@@ -23,7 +23,7 @@ export default function SigninForm() {
     if (error) {
       setMessage(`❌ ${error.message}`);
     } else {
-      navigate("/viewer");
+      navigate("/");
     }
     setLoading(false);
   };
