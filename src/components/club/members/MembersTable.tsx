@@ -39,7 +39,7 @@ const MembersTable = ({
       </div>
 
       <section className="pt-[20px] px-[20px] w-full rounded-[20px] border border-gray-01 bg-white">
-        <div className="grid grid-cols-[138px_138px_138px_180px_250px_100px] gap-x-[20px] items-center justify-items-center px-[20px] h-[58px] rounded-[12px] bg-card-2">
+        <div className="grid grid-cols-[138px_138px_138px_180px_200px_100px] gap-x-[20px] items-center justify-items-center px-[20px] h-[58px] rounded-[12px] bg-card-2">
           <p className="typo-text-lg-b text-gray-07">이름</p>
           <p className="typo-text-lg-b text-gray-07">직급</p>
           <p className="typo-text-lg-b text-gray-07">졸업 여부</p>
@@ -49,7 +49,7 @@ const MembersTable = ({
         </div>
         {members.map((member, index) => (
           <div key={member.id}>
-            <div className="grid grid-cols-[138px_138px_138px_180px_250px_100px] gap-x-[20px] items-center justify-items-center px-[20px] py-[20px]">
+            <div className="grid grid-cols-[138px_138px_138px_180px_200px_100px] gap-x-[20px] items-center justify-items-center px-[20px] py-[20px]">
               <div
                 className={
                   member.isMe
