@@ -1,0 +1,36 @@
+name: Frontend Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build   # Vite/CRA 모두 보통 여기
+
+      - name: Deploy dist via rsync
+        uses: burnett01/rsync-deployments@7.1.0
+        with:
+          switches: -avzr --delete
+          path: dist/                     # CRA면 build/, Vite면 dist/ (필요시 수정)
+          remote_path: ${{ secrets.FRONTEND_PATH }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_port: ${{ secrets.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_KEY }}
