@@ -27,6 +27,7 @@ import AsideLayout from "./layouts/AsideLayout";
 import MyClubs from "./pages/MyClubs";
 import ClubArchive from "./pages/club/ClubArchive";
 import PageLayoutV2 from "./layouts/PageLayoutV2";
+import ClubMembers from "./pages/club/ClubMembers";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: "archive",
         element: <ClubArchive />,
+      },
+      {
+        path: "members",
+        element: <ClubMembers />,
       },
     ],
   },

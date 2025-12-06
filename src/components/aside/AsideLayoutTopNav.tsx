@@ -41,6 +41,18 @@ const AsideLayoutTopNav = ({ clubName }: AsideLayoutTopNavProps) => {
               </a>
             </>
           )}
+          {location.pathname.includes("/members") && (
+            <>
+              <img src={ic_arrow_right_blue} alt="" />
+              <a href={`/club/members?clubId=${clubId ?? ""}`}>동아리 구성원 관리</a>
+            </>
+          )}
+          {location.pathname.includes("/members") && (
+            <>
+              <img src={ic_arrow_right_blue} alt="" />
+              <a href={`/club/members?clubId=${clubId ?? ""}`}>구성원 명단</a>
+            </>
+          )}
         </>
       ) : (
         <button

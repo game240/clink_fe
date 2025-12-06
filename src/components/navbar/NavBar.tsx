@@ -12,6 +12,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import { twMerge } from "tailwind-merge";
 import { supabase } from "../../libs/supabaseClient";
 import NoticeItem from "./NoticeItem";
+import axiosClient from "../../apis/axiosClient";
+
+export interface Notice {
+  id: string;
+  clubId: string;
+  clubName: string;
+  invitedAt: string;
+}
 
 const NavBar = () => {
   // const [searchValue, setSearchValue] = useState("");
@@ -24,7 +32,7 @@ const NavBar = () => {
   // const [showSuggestions, setShowSuggestions] = useState(false);
   // const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const notice = true; // useState로 대체
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const noticeRef = useRef<HTMLDivElement>(null);
   const noticeBtnRef = useRef<HTMLButtonElement>(null);
@@ -39,62 +47,26 @@ const NavBar = () => {
     }
   }, [isNoticeOutside]);
 
-  // 로그인
-  // const userRef = useRef(null);
-  // const { isOutside } = useOutsideClick({ ref: userRef });
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const { data } = await axiosClient.get("/club/invitations");
+        setNotices(data);
+      } catch (error) {
+        console.error("GET /api/club/invitations Error:", error);
+      }
+    };
+    fetchNotices();
+  }, []);
 
-  // const fetchSuggestions = async (q: string) => {
-  //   if (!q) {
-  //     return setSuggestions([]);
-  //   }
-
-  //   try {
-  //     const { data } = await axiosClient.get("/search-autocomplete", {
-  //       params: { q },
-  //     });
-  //     setSuggestions(data);
-  //   } catch (error) {
-  //     console.error("Autocomplete axios error:", error);
-  //     setSuggestions([]);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (debounceRef.current) {
-  //     clearTimeout(debounceRef.current);
-  //   }
-  //   debounceRef.current = setTimeout(() => {
-  //     fetchSuggestions(searchValue.trim());
-  //   }, 200);
-  //   return () => {
-  //     if (debounceRef.current) {
-  //       clearTimeout(debounceRef.current);
-  //     }
-  //   };
-  // }, [searchValue]);
-
-  // useEffect(() => {
-  //   setShowSuggestions(true);
-  // }, [suggestions]);
-
-  // // 연관검색어 리스트 ref
-  // const suggRef = useRef<HTMLUListElement>(null);
-  // const { isOutside } = useOutsideClick({ ref: suggRef });
-
-  // useEffect(() => {
-  //   if (isOutside) {
-  //     setShowSuggestions(false);
-  //   }
-  // }, [isOutside]);
-
-  // onBlur 시, 다음 포커스 대상이 리스트 내부면 닫지 않도록
-  // const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-  //   const next = e.relatedTarget as HTMLElement | null;
-  //   if (next && suggRef.current?.contains(next)) {
-  //     return;
-  //   }
-  //   setShowSuggestions(false);
-  // };
+  const handleInvitation = async (invitationId: string, action: "accept" | "reject") => {
+    try {
+      setNotices((prev) => prev.filter((notice) => notice.id !== invitationId));
+      await axiosClient.patch(`/club/invitations/${invitationId}`, { action });
+    } catch (error) {
+      console.error("PATCH /api/club/invitations/:invitationId Error:", error);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -191,13 +163,16 @@ const NavBar = () => {
 
         <div className="flex items-center gap-[35px]">
           <button
-            className={twMerge("cursor-pointer", !user && "opacity-0")}
+            className={twMerge("relative cursor-pointer", !user && "opacity-0")}
             ref={noticeBtnRef}
             onClick={() => {
               setIsNoticeOpen(!isNoticeOpen);
             }}
           >
             <img src={ic_notification} alt="" />
+            {notices.length > 0 && (
+              <span className="absolute top-0 right-0 w-[8px] h-[8px] bg-[#FF383C] rounded-full" />
+            )}
           </button>
           <button className={twMerge("cursor-pointer", !user && "opacity-0")}>
             <img src={ic_circle_user} alt="" />
@@ -218,8 +193,15 @@ const NavBar = () => {
             ref={noticeRef}
           >
             <p className="text-title-md-b text-gray-07">알림</p>
-            {notice ? (
-              <NoticeItem />
+            {notices.length > 0 ? (
+              notices.map((notice) => (
+                <NoticeItem
+                  key={notice.clubId}
+                  notice={notice}
+                  onAccept={() => handleInvitation(notice.id, "accept")}
+                  onReject={() => handleInvitation(notice.id, "reject")}
+                />
+              ))
             ) : (
               <p className="text-text-md-m text-gray-07">알림이 없습니다.</p>
             )}
