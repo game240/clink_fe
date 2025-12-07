@@ -120,7 +120,7 @@ const ClubMembers = () => {
     // "일반"으로 변경하는 경우
     if (newPosition === "일반") {
       if (isCurrentlyOfficer) {
-        // 운영진 → 일반
+        // 운영진 → 일반 (테이블 간 이동)
         onChangeInstantlyTableMembers(
           officers,
           generalMembers,
@@ -130,6 +130,8 @@ const ClubMembers = () => {
           newPosition,
           currentGraduationStatus
         );
+        // 테이블 간 이동 시에는 현재 테이블에서 제거된 상태를 반환
+        return members.filter((member) => member.id !== id);
       }
       // 이미 일반이면 같은 테이블 내에서만 업데이트
       else if (isCurrentlyGeneral) {
@@ -142,7 +144,7 @@ const ClubMembers = () => {
     // 운영진 역할로 변경하는 경우
     else {
       if (isCurrentlyGeneral) {
-        // 일반 → 운영진
+        // 일반 → 운영진 (테이블 간 이동)
         onChangeInstantlyTableMembers(
           generalMembers,
           officers,
@@ -152,6 +154,8 @@ const ClubMembers = () => {
           newPosition,
           currentGraduationStatus
         );
+        // 테이블 간 이동 시에는 현재 테이블에서 제거된 상태를 반환
+        return members.filter((member) => member.id !== id);
       }
       // 이미 운영진이면 같은 테이블 내에서만 업데이트
       else if (isCurrentlyOfficer) {
