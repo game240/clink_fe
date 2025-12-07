@@ -89,7 +89,7 @@ const CreateClub = () => {
       setName("");
       setDescription("");
       setTimeout(() => {
-        navigate("/organizations");
+        navigate("/");
       }, 700);
       return data;
     } catch (error) {
