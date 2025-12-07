@@ -38,8 +38,8 @@ const Landing = () => {
           <div className="flex justify-between">
             <ClubStartBlock
               className="bg-primary-02"
-              title="동아리 생성"
-              description="새로운 동아리를 만들고 싶다면?"
+              title="동아리 만들기"
+              description="새로운 동아리를 만들고 멤버를 초대해보세요."
               src={pencil}
               onClick={() => {
                 navigate("/create");
@@ -48,7 +48,7 @@ const Landing = () => {
             <ClubStartBlock
               className="bg-secondary-02"
               title="동아리 가입"
-              description="함께할 동아리를 찾고 있다면?"
+              description="원하는 동아리를 찾고 가입 요청을 보내보세요."
               src={magnifier}
               onClick={() => {}}
             />
