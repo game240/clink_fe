@@ -90,7 +90,7 @@ const CreateClub = () => {
       setName("");
       setDescription("");
       setTimeout(() => {
-        navigate("/");
+        navigate("/my-clubs");
       }, 700);
       return data;
     } catch (error) {
