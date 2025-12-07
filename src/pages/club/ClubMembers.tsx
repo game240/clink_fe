@@ -294,7 +294,9 @@ const ClubMembers = () => {
       <div className="flex justify-between items-center mt-[-10px] mb-[30px]">
         <div className="flex items-center gap-[15px]">
           <h1 className="typo-head-md-b">총 회원 수</h1>
-          <p className="typo-title-lg-b text-primary-04">30명</p>
+          <p className="typo-title-lg-b text-primary-04">
+            {officers.length + generalMembers.length + graduatedMembers.length}명
+          </p>
         </div>
         <button
           className="w-[218px] h-[60px] rounded-[12px] bg-primary-04 typo-title-md-b text-white cursor-pointer"
