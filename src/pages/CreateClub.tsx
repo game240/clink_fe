@@ -74,6 +74,7 @@ const CreateClub = () => {
     try {
       const formData = new FormData();
       formData.append("name", trimmed);
+      formData.append("location", location.trim() || "");
       formData.append("description", description.trim() || "");
       formData.append("profile_id", user.id);
       if (thumbnailFile) {
