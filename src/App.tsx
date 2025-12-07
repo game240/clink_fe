@@ -28,6 +28,7 @@ import MyClubs from "./pages/MyClubs";
 import ClubArchive from "./pages/club/ClubArchive";
 import PageLayoutV2 from "./layouts/PageLayoutV2";
 import ClubMembers from "./pages/club/ClubMembers";
+import ClubPositionManage from "./pages/club/ClubPositionManage";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path: "members",
         element: <ClubMembers />,
+      },
+      {
+        path: "position-manage",
+        element: <ClubPositionManage />,
       },
     ],
   },
@@ -123,9 +128,7 @@ const router = createBrowserRouter([
                     className="w-[117px] h-[60px] bg-primary-04 rounded-[12px] typo-title-md-b text-white cursor-pointer"
                     onClick={() =>
                       navigate(
-                        `/edit/${encodeURI(
-                          title || ""
-                        )}?clubId=${clubId}&wikiType=${wikiType}`,
+                        `/edit/${encodeURI(title || "")}?clubId=${clubId}&wikiType=${wikiType}`,
                         {
                           state: {
                             isPublic,

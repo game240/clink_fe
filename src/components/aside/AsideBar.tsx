@@ -17,19 +17,26 @@ const AsideBar = ({ thumbnail, clubName }: AsideBarProps) => {
   const clubId = searchParams.get("clubId");
 
   useEffect(() => {
-    if (location.pathname.endsWith("/archive")) {
+    if (location.pathname.includes("/archive")) {
       setSelectedBtn(0);
-    } else if (location.pathname.endsWith("/members")) {
+    } else if (
+      location.pathname.includes("/members") ||
+      location.pathname.includes("/position-manage")
+    ) {
       setSelectedBtn(1);
-    } else if (location.pathname.endsWith("/status")) {
+    } else if (location.pathname.includes("/status")) {
       setSelectedBtn(2);
     }
   }, [location]);
 
   useEffect(() => {
     // selectedBtn 변경될 때마다 매번 초기화
-    setSelectedMembersBtn(0);
-  }, [selectedBtn]);
+    if (location.pathname.includes("/position-manage")) {
+      setSelectedMembersBtn(1);
+    } else {
+      setSelectedMembersBtn(0);
+    }
+  }, [selectedBtn, location]);
 
   return (
     <aside className="flex flex-col gap-[40px] pt-[40px] w-[340px] min-h-[calc(100vh-84px)]">
@@ -66,6 +73,7 @@ const AsideBar = ({ thumbnail, clubName }: AsideBarProps) => {
               isSelected={selectedMembersBtn === 0}
               onClick={() => {
                 setSelectedMembersBtn(0);
+                navigate(`/club/members?clubId=${clubId ?? ""}`);
               }}
             >
               구성원 명단
@@ -74,6 +82,7 @@ const AsideBar = ({ thumbnail, clubName }: AsideBarProps) => {
               isSelected={selectedMembersBtn === 1}
               onClick={() => {
                 setSelectedMembersBtn(1);
+                navigate(`/club/position-manage?clubId=${clubId ?? ""}`);
               }}
             >
               운영진 직급 관리

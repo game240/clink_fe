@@ -41,7 +41,8 @@ const AsideLayoutTopNav = ({ clubName }: AsideLayoutTopNavProps) => {
               </a>
             </>
           )}
-          {location.pathname.includes("/members") && (
+          {(location.pathname.includes("/members") ||
+            location.pathname.includes("/position-manage")) && (
             <>
               <img src={ic_arrow_right_blue} alt="" />
               <a href={`/club/members?clubId=${clubId ?? ""}`}>동아리 구성원 관리</a>
@@ -51,6 +52,12 @@ const AsideLayoutTopNav = ({ clubName }: AsideLayoutTopNavProps) => {
             <>
               <img src={ic_arrow_right_blue} alt="" />
               <a href={`/club/members?clubId=${clubId ?? ""}`}>구성원 명단</a>
+            </>
+          )}
+          {location.pathname.includes("/position-manage") && (
+            <>
+              <img src={ic_arrow_right_blue} alt="" />
+              <a href={`/club/position-manage?clubId=${clubId ?? ""}`}>운영진 직급 관리</a>
             </>
           )}
         </>
