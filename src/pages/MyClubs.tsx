@@ -23,11 +23,9 @@ const MyClubs = () => {
 
   return (
     <main>
-      <div className="flex flex-col justify-center items-center gap-[25px] w-full h-[240px] bg-primary-01">
-        <h1 className="text-[32px] font-bold text-gray-08">나의 동아리</h1>
-        <p className="text-text-lg-m text-gray-07">
-          현재 가입 중인 동아리 목록입니다.
-        </p>
+      <div className="flex flex-col justify-center gap-[25px] px-[12.083333333333333333333333333333%] w-full h-[295px] bg-primary-04 text-white">
+        <h1 className="text-[60px] font-bold">나의 동아리</h1>
+        <p className="typo-head-lg-m">현재 가입 중인 동아리 목록입니다.</p>
       </div>
       <section className="flex flex-col gap-[70px] pt-[70px] pb-[100px] px-[12.083333333333333333333333333333%]">
         <MyClubsList clubList={clubList} />

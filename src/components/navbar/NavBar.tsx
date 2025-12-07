@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ic_clink from "../../assets/ic_clink.svg";
 import { useEffect, useRef, useState } from "react";
 // import axiosClient from "../../apis/axiosClient";
@@ -26,6 +26,7 @@ const NavBar = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 검색
   // const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -77,6 +78,10 @@ const NavBar = () => {
     navigate("/signin");
   };
 
+  const isSelectedClassName = "text-primary-04 underline underline-offset-[9px] decoration-[3px]";
+  const hoverClassName =
+    "hover:text-primary-04 hover:underline hover:underline-offset-[9px] hover:decoration-[3px]";
+
   return (
     <nav className="flex justify-between items-center px-[12.083333333333333333333333333333%] w-full h-[84px] bg-white border-b border-gray-01">
       <section className="flex items-center gap-[80px]">
@@ -95,7 +100,15 @@ const NavBar = () => {
               navigate("/my-clubs");
             }}
           >
-            <p className="text-head-sm-b">나의 동아리</p>
+            <p
+              className={twMerge(
+                "typo-head-sm-b",
+                location.pathname === "/my-clubs" ? isSelectedClassName : "",
+                hoverClassName
+              )}
+            >
+              나의 동아리
+            </p>
           </button>
           <button
             className="flex items-center gap-[7px] cursor-pointer"
@@ -103,10 +116,18 @@ const NavBar = () => {
               navigate("/create");
             }}
           >
-            <p className="text-head-sm-b">동아리 생성</p>
+            <p
+              className={twMerge(
+                "typo-head-sm-b",
+                location.pathname === "/create" ? isSelectedClassName : "",
+                hoverClassName
+              )}
+            >
+              동아리 만들기
+            </p>
           </button>
           <button className="flex items-center gap-[7px] cursor-pointer">
-            <p className="text-head-sm-b">동아리 검색</p>
+            <p className={twMerge("typo-head-sm-b", hoverClassName)}>동아리 검색</p>
           </button>
         </div>
       </section>

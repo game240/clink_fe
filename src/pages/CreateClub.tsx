@@ -36,8 +36,7 @@ const CreateClub = () => {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [openThumbnailDeleteDialog, setOpenThumbnailDeleteDialog] =
-    useState(false);
+  const [openThumbnailDeleteDialog, setOpenThumbnailDeleteDialog] = useState(false);
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -80,15 +79,11 @@ const CreateClub = () => {
       if (thumbnailFile) {
         formData.append("thumbnail", thumbnailFile);
       }
-      const { data } = await axiosClient.post<CreateClubResponse>(
-        "/club",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const { data } = await axiosClient.post<CreateClubResponse>("/club", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log(data);
       alert("동아리가 생성되었습니다.");
       setName("");
@@ -114,11 +109,9 @@ const CreateClub = () => {
 
   return (
     <main>
-      <div className="flex flex-col justify-center items-center w-full h-[240px] bg-primary-01">
-        <h1 className="text-[32px] font-bold text-gray-08">동아리 생성</h1>
-        <p className="text-text-lg-m text-gray-07">
-          새로운 동아리를 만들어 보세요!
-        </p>
+      <div className="flex flex-col justify-center gap-[20px] px-[12.083333333333333333333333333333%] w-full h-[295px] bg-primary-04 text-white">
+        <h1 className="text-[60px] font-bold">동아리 만들기</h1>
+        <p className="typo-head-lg-m">새로운 동아리를 만들고 함께할 회원을 모집해보세요.</p>
       </div>
       <form
         className="flex flex-col gap-[40px] pt-[70px] px-[12.083333333333333333333333333333%]"
@@ -195,9 +188,7 @@ const CreateClub = () => {
           }}
         >
           <div className="flex flex-col gap-[20px]">
-            <h1 className="text-[24px] font-bold">
-              동아리 대표 사진을 삭제하시겠어요?
-            </h1>
+            <h1 className="text-[24px] font-bold">동아리 대표 사진을 삭제하시겠어요?</h1>
             <p className="typo-text-lg-m text-neutral-gray-08">
               대표 사진을 삭제하면 다시 등록해야 합니다.
             </p>
@@ -265,8 +256,7 @@ const CreateClub = () => {
           />
           <div className="flex justify-end w-full mt-[-5px]">
             <p className="text-text-sm-r text-gray-04">
-              <span className="text-gray-07">{description.length}</span>/40
-              (최소 10자)
+              <span className="text-gray-07">{description.length}</span>/40 (최소 10자)
             </p>
           </div>
         </section>
@@ -285,9 +275,7 @@ const CreateClub = () => {
           <RoundBtn
             className="w-[230px] h-[70px]"
             onClick={onSubmit}
-            disabled={
-              submitting || !(name && location && description.length >= 10)
-            }
+            disabled={submitting || !(name && location && description.length >= 10)}
           >
             완료
           </RoundBtn>
